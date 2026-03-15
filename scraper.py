@@ -27,102 +27,147 @@ def save_raw_article_data(source, article_data):
         json.dump(article_data, f, ensure_ascii=False, indent=4)
     print(f"Saved raw article from {source} to {filepath}")
 
+def extract_article_details(soup, url, source_name, title_selector, date_selector, text_selector):
+    """
+    Extracts article details (title, date, text) from a BeautifulSoup object.
+    """
+    title = soup.select_one(title_selector).get_text(strip=True) if soup.select_one(title_selector) else 'No Title'
+    
+    # Generic date parsing
+    date_element = soup.select_one(date_selector)
+    published_date = None
+    if date_element:
+        if date_element.has_attr('datetime'):
+            published_date = date_element['datetime']
+        else:
+            published_date = date_element.get_text(strip=True)
+    if not published_date:
+        published_date = datetime.now().isoformat() # Fallback
+
+    article_text_elements = soup.select(text_selector)
+    article_text = "\n".join([p.get_text(separator=' ', strip=True) for p in article_text_elements])
+    if not article_text:
+        article_text = soup.get_text(separator=' ', strip=True) # Fallback if specific classes not found
+
+    return {
+        'source': source_name,
+        'url': url,
+        'extracted_text': article_text,
+        'title': title,
+        'published_date': published_date,
+        'language': 'ja', # Assuming Japanese
+        'status': 'raw'
+    }
+
 def scrape_rss_feed(source_name, rss_url):
     """
     Scrapes articles from an RSS feed.
-    :param source_name: Name of the news source.
-    :param rss_url: URL of the RSS feed.
-    :return: List of dictionaries, each representing an article.
     """
     print(f"Scraping RSS feed for {source_name} from {rss_url}")
     feed = feedparser.parse(rss_url)
-    articles = []
+    articles_data = [] # Changed name to avoid conflict with RSS feed 'entries'
+
     for entry in feed.entries:
         try:
             article_url = entry.link
-            response = requests.get(article_url, timeout=10)
+            response = requests.get(article_url, timeout=15) # Increased timeout
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'lxml')
             
-            # This is a generic attempt to get full text. Will need refinement per source.
-            article_body_tags = soup.find_all(['p', 'div'], class_=['article-body', 'content', 'main-text', 'article-text', 'c-article-body'])
-            article_text = "\n".join([p.get_text(separator=' ', strip=True) for p in article_body_tags])
-            if not article_text:
-                 article_text = soup.get_text(separator=' ', strip=True)
+            # Since RSS often includes full content or good summary, we can try to extract directly from entry
+            # or rely on the extract_article_details if a generic way is needed.
+            # For RSS, the `entry` often has title and published date directly.
+            title = entry.title if hasattr(entry, 'title') else 'No Title'
+            published_date = entry.published if hasattr(entry, 'published') else datetime.now().isoformat()
+            
+            # Attempt to get text from entry summary/content or from fetched page
+            extracted_text = entry.summary if hasattr(entry, 'summary') else ''
+            if not extracted_text and hasattr(entry, 'content'):
+                extracted_text = entry.content[0].value if entry.content else ''
+            
+            # If still empty, try to extract from the soup (generic approach) - this should be overridden by actual selectors if needed
+            if not extracted_text:
+                article_body_tags = soup.find_all(['p', 'div'], class_=['article-body', 'content', 'main-text', 'article-text', 'c-article-body'])
+                extracted_text = "\n".join([p.get_text(separator=' ', strip=True) for p in article_body_tags])
+                if not extracted_text:
+                     extracted_text = soup.get_text(separator=' ', strip=True)
 
             article_data = {
                 'source': source_name,
                 'url': article_url,
                 'raw_html': response.text,
-                'extracted_text': article_text,
-                'title': entry.title if hasattr(entry, 'title') else 'No Title',
-                'published_date': entry.published if hasattr(entry, 'published') else datetime.now().isoformat(),
+                'extracted_text': extracted_text,
+                'title': title,
+                'published_date': published_date,
                 'language': 'ja',
                 'status': 'raw'
             }
             save_raw_article_data(source_name, article_data)
-            articles.append(article_data)
+            articles_data.append(article_data)
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching article {entry.link}: {e}")
+            print(f"Error fetching RSS article {entry.link}: {e}")
         except Exception as e:
             print(f"Error processing RSS entry {entry.link}: {e}")
-    return articles
+    return articles_data
 
-def scrape_html_main_page(source_name, base_url, article_selector, title_selector, date_selector, text_selector):
+
+def scrape_html_source(source_name, base_url, article_link_selector, title_selector, date_selector, text_selector, max_listing_pages=1):
     """
-    Generic function to scrape articles from a main news listing page.
-    Requires specific CSS selectors for the article links, titles, dates, and full text.
-    This will need to be highly customized for each HTML-scraped source.
+    Scrapes articles from a main news listing page and then individual article pages.
     """
-    print(f"Scraping main HTML page for {source_name} from {base_url}")
-    articles = []
-    try:
-        response = requests.get(base_url, timeout=10)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'lxml')
+    print(f"Scraping HTML for {source_name} from {base_url}")
+    articles_collected = []
+    visited_links = set()
 
-        # Find all article links on the main page
-        article_links = [a['href'] for a in soup.select(article_selector) if 'href' in a.attrs]
-        
-        for link in set(article_links): # Use set to avoid duplicates
-            if not link.startswith('http'):
-                link = requests.compat.urljoin(base_url, link) # Resolve relative URLs
+    for page_num in range(max_listing_pages):
+        listing_url = f"{base_url}page/{page_num + 1}/" if max_listing_pages > 1 and page_num > 0 else base_url
+        print(f"  Fetching listing page: {listing_url}")
+        try:
+            response = requests.get(listing_url, timeout=15)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, 'lxml')
 
-            try:
-                article_response = requests.get(link, timeout=10)
-                article_response.raise_for_status()
-                article_soup = BeautifulSoup(article_response.content, 'lxml')
+            # Find all potential article links on the listing page
+            found_links = []
+            for a_tag in soup.select(article_link_selector):
+                if 'href' in a_tag.attrs:
+                    link = requests.compat.urljoin(base_url, a_tag['href'])
+                    found_links.append(link)
+            
+            if not found_links and page_num == 0:
+                print(f"    No article links found on the first listing page for {source_name} with selector {article_link_selector}. Adjusting strategy...")
+                # Could add a fallback here to try different selectors or directly scrape the main page if it's a single article layout
 
-                title = article_soup.select_one(title_selector).get_text(strip=True) if article_soup.select_one(title_selector) else 'No Title'
-                
-                # Dynamic date parsing might be complex, start with a generic approach
-                published_date = article_soup.select_one(date_selector).get_text(strip=True) if article_soup.select_one(date_selector) else datetime.now().isoformat()
+            for link in found_links:
+                if link in visited_links:
+                    continue
+                visited_links.add(link);
 
-                article_text_elements = article_soup.select(text_selector)
-                article_text = "\n".join([p.get_text(separator=' ', strip=True) for p in article_text_elements])
-                if not article_text:
-                    article_text = article_soup.get_text(separator=' ', strip=True)
+                try:
+                    article_response = requests.get(link, timeout=15)
+                    article_response.raise_for_status()
+                    article_soup = BeautifulSoup(article_response.content, 'lxml')
 
+                    article_details = extract_article_details(article_soup, link, source_name, title_selector, date_selector, text_selector)
+                    article_details['raw_html'] = article_response.text # Add raw HTML here
+                    save_raw_article_data(source_name, article_details)
+                    articles_collected.append(article_details)
+                except requests.exceptions.RequestException as e:
+                    print(f"    Error fetching article {link}: {e}")
+                except Exception as e:
+                    print(f"    Error parsing article {link}: {e}")
+            
+            if not found_links and page_num > 0: # Stop if no new links on subsequent pages
+                break
 
-                article_data = {
-                    'source': source_name,
-                    'url': link,
-                    'raw_html': article_response.text,
-                    'extracted_text': article_text,
-                    'title': title,
-                    'published_date': published_date,
-                    'language': 'ja',
-                    'status': 'raw'
-                }
-                save_raw_article_data(source_name, article_data)
-                articles.append(article_data)
-            except requests.exceptions.RequestException as e:
-                print(f"Error fetching article {link}: {e}")
-            except Exception as e:
-                print(f"Error parsing article {link}: {e}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching main page {base_url}: {e}")
-    return articles
+        except requests.exceptions.RequestException as e:
+            print(f"  Error fetching listing page {listing_url}: {e}")
+            break
+        except Exception as e:
+            print(f"  Error processing listing page {listing_url}: {e}")
+            break
+    return articles_collected
+
 
 def main_scraper():
     """
@@ -131,7 +176,7 @@ def main_scraper():
     print("Starting main scraper execution...")
 
     # --- RSS Feeds ---
-    # Nikkei Business Electronic Edition (multiple feeds)
+    # Nikkei Business Electronic Edition
     nikkei_business_feeds = {
         "Nikkei Business Latest": "https://business.nikkei.com/rss/sns/nb.rdf",
         "Nikkei Business X": "https://business.nikkei.com/rss/sns/nb-x.rdf",
@@ -150,48 +195,47 @@ def main_scraper():
     # NHK News
     scrape_rss_feed("NHK News", "https://news.web.nhk/n-data/conf/na/rss/cat0.xml")
 
-    # --- HTML Scraping (will need selector customization) ---
-    # Yomiuri Shimbun - Placeholder selectors
-    # Actual selectors will need to be determined by inspecting the Yomiuri website structure
-    # For now, using generic examples.
+    # --- HTML Scraping ---
     print("\n--- Starting HTML Scraping ---")
-    scrape_html_main_page(
+
+    # Yomiuri Shimbun
+    scrape_html_source(
         source_name="Yomiuri Shimbun",
-        base_url="https://www.yomiuri.co.jp/",
-        article_selector=".p-category-article__item a", # Example selector
-        title_selector=".p-article-header__title",      # Example selector
-        date_selector=".p-article-header__date",        # Example selector
-        text_selector=".p-article-body__text p"          # Example selector
+        base_url="https://www.yomiuri.co.jp/", # Will need exact section URLs as homepage is dynamic and complex
+        article_link_selector=".p-list-item__link", # Use a common article link selector
+        title_selector="h1.p-article__title",
+        date_selector=".p-article__date",
+        text_selector=".p-article__text p"
     )
 
-    # Sankei Shimbun - Placeholder selectors
-    scrape_html_main_page(
+    # Sankei Shimbun
+    scrape_html_source(
         source_name="Sankei Shimbun",
         base_url="https://www.sankei.com/",
-        article_selector=".gr-article-list__item a",    # Example selector
-        title_selector=".article-header .title",        # Example selector
-        date_selector=".article-header .date",          # Example selector
-        text_selector=".article-text p"                  # Example selector
+        article_link_selector="a[href^='/article/']", 
+        title_selector="h1.article-headline",
+        date_selector="time", 
+        text_selector=".article-body p.article-text"
     )
 
-    # Fuji TV News - Placeholder selectors
-    scrape_html_main_page(
+    # Fuji TV News (FNN)
+    scrape_html_source(
         source_name="Fuji TV News",
-        base_url="https://www.fujitv.co.jp/news/", # Or https://www.fujitv.com/news/
-        article_selector=".news-item a",             # Example selector
-        title_selector=".news-title",               # Example selector
-        date_selector=".news-date",                 # Example selector
-        text_selector=".news-content p"              # Example selector
+        base_url="https://www.fnn.jp/", 
+        article_link_selector=".m-article-item__link",
+        title_selector="h1.article-header-info__ttl",
+        date_selector="time.article-header-info__time", 
+        text_selector=".article-body p"
     )
 
-    # TBS News DIG - Placeholder selectors
-    scrape_html_main_page(
+    # TBS News DIG
+    scrape_html_source(
         source_name="TBS News DIG",
         base_url="https://newsdig.tbs.co.jp/",
-        article_selector=".article-list__item a",    # Example selector
-        title_selector=".article-detail__title",     # Example selector
-        date_selector=".article-detail__date",       # Example selector
-        text_selector=".article-detail__body p"      # Example selector
+        article_link_selector="main article a[href^='/articles/-/']", 
+        title_selector="h1.article-header-title",
+        date_selector="time.article-header-time", 
+        text_selector=".article-body p"
     )
 
     print("Main scraper execution complete.")
