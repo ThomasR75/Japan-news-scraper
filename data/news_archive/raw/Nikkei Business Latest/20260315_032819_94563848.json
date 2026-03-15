@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 「リーダーになるということは、実は自由を手に入れることだ」と大野栄一さん。「抜擢されたなら、嫌々でもいいからリーダーはやってみるべきだ」と藤吉豊さん。ベストセラー著者の2人が、私たち一人ひとりが持つべきリーダーシップについて考えます。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 「リーダーになるということは、実は自由を手に入れることだ」と大野栄一さん。「抜擢されたなら、嫌々でもいいからリーダーはやってみるべきだ」と藤吉豊さん。ベストセラー著者の2人が、私たち一人ひとりが持つべきリーダーシップについて考えます。...",
+    "summarization_status": "summarized_by_llm"
 }

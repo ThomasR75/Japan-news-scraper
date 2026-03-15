@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 2月の衆議院選挙で自民党が圧勝。第2次高市政権が発足した。選挙前からSNSの分析などで自民党の議席が300を超える可能性があるという指摘はあったが、比例代表の名簿登載者が足りなくなるほどの圧勝になったことは想定外で驚いた。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 2月の衆議院選挙で自民党が圧勝。第2次高市政権が発足した。選挙前からSNSの分析などで自民党の議席が300を超える可能性があるという指摘はあったが、比例代表の名簿登載者が足りなくなるほどの圧勝になったことは想定外で驚いた。...",
+    "summarization_status": "summarized_by_llm"
 }

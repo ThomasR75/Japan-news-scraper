@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 成田山から桜町領に帰ってきた金次郎は、仕事を投げ出した罰を受ける覚悟を固めていた。だが、意外にも、金次郎の再建策を否定した上役が任を解かれていた。そして、これまで金次郎の足をひっぱってきた名主たちが思わぬ態度を見せた。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 成田山から桜町領に帰ってきた金次郎は、仕事を投げ出した罰を受ける覚悟を固めていた。だが、意外にも、金次郎の再建策を否定した上役が任を解かれていた。そして、これまで金次郎の足をひっぱってきた名主たちが思わぬ態度を見せた。...",
+    "summarization_status": "summarized_by_llm"
 }

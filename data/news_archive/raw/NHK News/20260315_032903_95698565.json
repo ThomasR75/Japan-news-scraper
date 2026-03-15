@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 旧優生保護法のもとで不妊手術などを強制された被害者への補償が進まない中、ことしから東京都や広島県など1都3県が、被害者に補償の対象となることを直接伝える、個別通知を始めたことが分かりました。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 旧優生保護法のもとで不妊手術などを強制された被害者への補償が進まない中、ことしから東京都や広島県など1都3県が、被害者に補償の対象となることを直接伝える、個別通知を始めたことが分かりました。...",
+    "summarization_status": "summarized_by_llm"
 }

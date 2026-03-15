@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] インフレで苦しむ庶民への支援策としての減税や補助金は、一時的に国民へ渡っても、皮肉にも物価高を助長し、資産家との格差を劇的に広げてしまう。バラマキ政策で本当に困るのは低所得者層だ。（インフレ・円安・バラマキ・国富流出）",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] インフレで苦しむ庶民への支援策としての減税や補助金は、一時的に国民へ渡っても、皮肉にも物価高を助長し、資産家との格差を劇的に広げてしまう。バラマキ政策で本当に困るのは低所得者層だ。（インフレ・円安・バラマキ・国富流出）...",
+    "summarization_status": "summarized_by_llm"
 }

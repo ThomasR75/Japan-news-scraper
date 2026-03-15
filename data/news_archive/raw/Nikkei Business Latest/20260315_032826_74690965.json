@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ディスカウント店「ドン・キホーテ」を中心に、国内外で約800店舗を展開する小売りの異端児。2025年9月、48歳の若き新社長が経営のバトンを受け取った。創業の精神を受け継ぎ、会社を次の成長ステージに押し上げる。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ディスカウント店「ドン・キホーテ」を中心に、国内外で約800店舗を展開する小売りの異端児。2025年9月、48歳の若き新社長が経営のバトンを受け取った。創業の精神を受け継ぎ、会社を次の成長ステージに押し上げる。...",
+    "summarization_status": "summarized_by_llm"
 }

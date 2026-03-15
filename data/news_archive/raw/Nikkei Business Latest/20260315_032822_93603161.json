@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 新型コロナウイルス禍の収束を経て、多くの企業が「出社回帰」へと舵（かじ）を切っている。こうした動きを歓迎する従業員も少なくないが、一方で反発の声や法的リスクへの懸念も高まっているという。今回は各社の事例に加え、在宅勤務の生産性に関する最新研究、法的留意点などを網羅した過去記事を振り返っていく。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 新型コロナウイルス禍の収束を経て、多くの企業が「出社回帰」へと舵（かじ）を切っている。こうした動きを歓迎する従業員も少なくないが、一方で反発の声や法的リスクへの懸念も高まっているという。今回は各社の事例に加え、在宅勤務の生産性に関する最新研究、法的留意点などを網羅した過去記事を振り返っていく。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 高専生の求人倍率は20倍超、ITやコンサルも参戦し採用競争は激しい。「学校推薦」の採用枠を勝ち取るには、地道な信頼関係構築が必要だ。まずは「自由応募」が狙い目。挑戦したいと思わせることが重要に。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 高専生の求人倍率は20倍超、ITやコンサルも参戦し採用競争は激しい。「学校推薦」の採用枠を勝ち取るには、地道な信頼関係構築が必要だ。まずは「自由応募」が狙い目。挑戦したいと思わせることが重要に。...",
+    "summarization_status": "summarized_by_llm"
 }

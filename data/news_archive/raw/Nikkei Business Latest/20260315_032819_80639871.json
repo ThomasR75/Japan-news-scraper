@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 「モジタバ師が表に出てきていないにもかかわらず最高指導者に選出された展開は、第12代イマームの逸話をほうふつさせます。第12代目のイマームは姿を現すことがありませんでした」（坂梨祥・日本エネルギー経済研究所 中東研究センター センター長）",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 「モジタバ師が表に出てきていないにもかかわらず最高指導者に選出された展開は、第12代イマームの逸話をほうふつさせます。第12代目のイマームは姿を現すことがありませんでした」（坂梨祥・日本エネルギー経済研究所 中東研究センター センター長）...",
+    "summarization_status": "summarized_by_llm"
 }

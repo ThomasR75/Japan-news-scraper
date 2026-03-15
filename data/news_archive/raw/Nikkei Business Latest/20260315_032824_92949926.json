@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 19年ぶりの高専新設校に、富士通やソニーなどが資金拠出した。半導体やAIなど、次世代の基盤産業を支える人材育成も進む。産学連携が実践型の教育を深めるカギとなっている。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 19年ぶりの高専新設校に、富士通やソニーなどが資金拠出した。半導体やAIなど、次世代の基盤産業を支える人材育成も進む。産学連携が実践型の教育を深めるカギとなっている。...",
+    "summarization_status": "summarized_by_llm"
 }

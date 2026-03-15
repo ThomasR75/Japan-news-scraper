@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 生成AIとAIエージェントの急速な進化は我々の存在価値を揺さぶっています。影響はこれから高等教育にも広がっていくはずです。座学中心の画一的で一方通行な教え方は意義を問われていくでしょう。大切になるのが「手を動かす」教育。ビジネスの現場に近い実践的な技能習得やグループワークなど、頭だけでなく、手、そしてAIを動かしながら身に付けるスキルの市場価値が高まります。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 生成AIとAIエージェントの急速な進化は我々の存在価値を揺さぶっています。影響はこれから高等教育にも広がっていくはずです。座学中心の画一的で一方通行な教え方は意義を問われていくでしょう。大切になるのが「手を動かす」教育。ビジネスの現場に近い実践的な技能習得やグループワークなど、頭だけでなく、手、そしてAIを動かしながら身に付けるスキルの市場価値が高まります。...",
+    "summarization_status": "summarized_by_llm"
 }

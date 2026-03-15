@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 香港のアクティビスト（物言う株主）として知られるオアシス・マネジメントがニデック株を約6.7％を取得した。最高投資責任者のセス・フィッシャー氏は12日、日経ビジネスの取材に「2種類の訴訟を選択肢に考えている」と明かした。永守氏がニデックの保有株を手放す可能性にも言及した。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 香港のアクティビスト（物言う株主）として知られるオアシス・マネジメントがニデック株を約6.7％を取得した。最高投資責任者のセス・フィッシャー氏は12日、日経ビジネスの取材に「2種類の訴訟を選択肢に考えている」と明かした。永守氏がニデックの保有株を手放す可能性にも言及した。...",
+    "summarization_status": "summarized_by_llm"
 }

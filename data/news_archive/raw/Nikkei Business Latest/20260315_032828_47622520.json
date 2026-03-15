@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 上場企業は様々な開示資料を作成・開示しており、証券取引所が決算短信、金融商品取引法が有報、会社法が事業報告などの開示を求める「多重構造」となっている。有価証券報告書などの一本化を法務省の審議会が議論しているが経理部の仕事がさらに増えかねず、縦割り行政の見直しといった本質的な議論が欠かせない。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 上場企業は様々な開示資料を作成・開示しており、証券取引所が決算短信、金融商品取引法が有報、会社法が事業報告などの開示を求める「多重構造」となっている。有価証券報告書などの一本化を法務省の審議会が議論しているが経理部の仕事がさらに増えかねず、縦割り行政の見直しといった本質的な議論が欠かせない。...",
+    "summarization_status": "summarized_by_llm"
 }

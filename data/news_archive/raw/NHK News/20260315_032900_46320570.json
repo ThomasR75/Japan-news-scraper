@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ホルムズ海峡が事実上、封鎖された状態が続く中、アメリカはイラン最大の原油の積み出し拠点を攻撃して圧力を強め、これに対してイランは報復も辞さないと警告し、さらなる衝突が懸念されています。こうした中、トラ…",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ホルムズ海峡が事実上、封鎖された状態が続く中、アメリカはイラン最大の原油の積み出し拠点を攻撃して圧力を強め、これに対してイランは報復も辞さないと警告し、さらなる衝突が懸念されています。こうした中、トラ…...",
+    "summarization_status": "summarized_by_llm"
 }

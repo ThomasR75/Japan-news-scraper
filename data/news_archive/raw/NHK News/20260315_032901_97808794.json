@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ロイター通信は、アメリカとイスラエルによるイランへの軍事作戦を終わらせるため、複数の中東諸国が停戦に向けた仲介を試みたものの、トランプ政権がイランとの協議を拒んでいると伝えました。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ロイター通信は、アメリカとイスラエルによるイランへの軍事作戦を終わらせるため、複数の中東諸国が停戦に向けた仲介を試みたものの、トランプ政権がイランとの協議を拒んでいると伝えました。...",
+    "summarization_status": "summarized_by_llm"
 }

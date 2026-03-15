@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] トランプ米大統領がイラン攻撃が終結するとの見方を示した後も、危機と供給リスクは継続する。特に危惧すべきはLNGの価格高騰と化学製品の不足だ。日本の経営者はこの事態に「正しく」慌て、直ちに供給網の再構築へと動く必要がある。マーケット・リスク・アドバイザリーの新村直弘氏に現状や見通し、企業の取るべき対策を聞いた。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] トランプ米大統領がイラン攻撃が終結するとの見方を示した後も、危機と供給リスクは継続する。特に危惧すべきはLNGの価格高騰と化学製品の不足だ。日本の経営者はこの事態に「正しく」慌て、直ちに供給網の再構築へと動く必要がある。マーケット・リスク・アドバイザリーの新村直弘氏に現状や見通し、企業の取るべき対策を聞いた。...",
+    "summarization_status": "summarized_by_llm"
 }

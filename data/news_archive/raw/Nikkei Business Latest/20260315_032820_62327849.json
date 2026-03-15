@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 熊本で半導体製造工場を運営するTSMCが高専卒業生を積極採用している。その数は4年間で100人。AI分野でも今後の中核人材と期待する声は多い。今や日本の先端産業の浮沈を握るといっても過言ではない高専。採用競争は激しさを増す一方だ。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 熊本で半導体製造工場を運営するTSMCが高専卒業生を積極採用している。その数は4年間で100人。AI分野でも今後の中核人材と期待する声は多い。今や日本の先端産業の浮沈を握るといっても過言ではない高専。採用競争は激しさを増す一方だ。...",
+    "summarization_status": "summarized_by_llm"
 }

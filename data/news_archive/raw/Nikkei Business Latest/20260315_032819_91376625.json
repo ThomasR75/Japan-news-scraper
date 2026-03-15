@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ［新連載］TSMC、高専生100人採用　「手を動かす」即戦力に初任給最大4割増し／明治、チェルシー終売決断の舞台裏　情か数字か「残るのはノスタルジーだけ」／ノジマ「出る杭入社」で初任給40万円も　新卒にも広がる報酬の柔軟設計、他",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ［新連載］TSMC、高専生100人採用　「手を動かす」即戦力に初任給最大4割増し／明治、チェルシー終売決断の舞台裏　情か数字か「残るのはノスタルジーだけ」／ノジマ「出る杭入社」で初任給40万円も　新卒にも広がる報酬の柔軟設計、他...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ピーター・ティールはいわば「現実社会に顕現した、どくさいスイッチを手にしたのび太君」なのだ。決して軽視してはいけない。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ピーター・ティールはいわば「現実社会に顕現した、どくさいスイッチを手にしたのび太君」なのだ。決して軽視してはいけない。...",
+    "summarization_status": "summarized_by_llm"
 }

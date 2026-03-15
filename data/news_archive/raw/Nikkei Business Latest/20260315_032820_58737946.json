@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ノジマが2026年春の新卒採用から「出る杭入社」と呼ばれる新制度を導入する。横並びの初任給を見直し、アルバイトで実績を積んだ学生を高く評価する。弾力的な報酬制度を実現する鍵になるのが企業文化に紐づいた独自の評価制度だ。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ノジマが2026年春の新卒採用から「出る杭入社」と呼ばれる新制度を導入する。横並びの初任給を見直し、アルバイトで実績を積んだ学生を高く評価する。弾力的な報酬制度を実現する鍵になるのが企業文化に紐づいた独自の評価制度だ。...",
+    "summarization_status": "summarized_by_llm"
 }

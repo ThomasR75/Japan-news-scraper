@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 来週は、日米欧の中央銀行が金融政策を決める会合が集中する「中銀ウィーク」。だがイラン情勢を受けて金融市場が乱高下し、各中銀とも様子見する公算が大きい。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 来週は、日米欧の中央銀行が金融政策を決める会合が集中する「中銀ウィーク」。だがイラン情勢を受けて金融市場が乱高下し、各中銀とも様子見する公算が大きい。...",
+    "summarization_status": "summarized_by_llm"
 }

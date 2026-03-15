@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 苦境に陥っている国内通信機器ベンダー。NECと富士通はMWC26で、基地局事業の挽回に向けたアピールを繰り広げた。日本から通信技術のノウハウや人材が失われてしまいかねない事態に直面する中、両社は生き残りに向け、経営方針を明確にする。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 苦境に陥っている国内通信機器ベンダー。NECと富士通はMWC26で、基地局事業の挽回に向けたアピールを繰り広げた。日本から通信技術のノウハウや人材が失われてしまいかねない事態に直面する中、両社は生き残りに向け、経営方針を明確にする。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ラグジュアリー企業の経営者の多くは自社ブランドを語るが、ロレックスの歴代経営者が公式に話すことはまれだ。ミュージアムもなく社史も出版しないまま同じ「卓越性の物語」を続ける。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ラグジュアリー企業の経営者の多くは自社ブランドを語るが、ロレックスの歴代経営者が公式に話すことはまれだ。ミュージアムもなく社史も出版しないまま同じ「卓越性の物語」を続ける。...",
+    "summarization_status": "summarized_by_llm"
 }

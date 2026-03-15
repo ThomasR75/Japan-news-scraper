@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 企業による人工知能（AI）活用では、人が判断し責任を取れる組織構造になっていることが重要だ。「AI従業員」を導入すると、既存のリスクマネジメントの手法が機能しなくなる可能性もある。経営層のトップダウンで「人間前提」から「AI前提」へと経営の仕組みを変革しなければならない。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 企業による人工知能（AI）活用では、人が判断し責任を取れる組織構造になっていることが重要だ。「AI従業員」を導入すると、既存のリスクマネジメントの手法が機能しなくなる可能性もある。経営層のトップダウンで「人間前提」から「AI前提」へと経営の仕組みを変革しなければならない。...",
+    "summarization_status": "summarized_by_llm"
 }

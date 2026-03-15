@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] エネルギー輸送の要衝であるホルムズ海峡の事実上封鎖が続いている。イランはこのままでは「原油1バレルが200ドルになる」と警告。国際エネルギー機関（IEA）は過去最大となる4億バレルの石油備蓄を協調放出することで合意した。しかし、この量は「世界消費のわずか4日分」に過ぎない。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] エネルギー輸送の要衝であるホルムズ海峡の事実上封鎖が続いている。イランはこのままでは「原油1バレルが200ドルになる」と警告。国際エネルギー機関（IEA）は過去最大となる4億バレルの石油備蓄を協調放出することで合意した。しかし、この量は「世界消費のわずか4日分」に過ぎない。...",
+    "summarization_status": "summarized_by_llm"
 }

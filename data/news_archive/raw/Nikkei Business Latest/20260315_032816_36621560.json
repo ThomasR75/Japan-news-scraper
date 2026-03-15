@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 米国がついに攻撃に踏み切ったイランの「ハールク島（英語名カーグ島）」。イランの原油輸出のほぼすべてを担う、同島への攻撃の意味と影響とは。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 米国がついに攻撃に踏み切ったイランの「ハールク島（英語名カーグ島）」。イランの原油輸出のほぼすべてを担う、同島への攻撃の意味と影響とは。...",
+    "summarization_status": "summarized_by_llm"
 }

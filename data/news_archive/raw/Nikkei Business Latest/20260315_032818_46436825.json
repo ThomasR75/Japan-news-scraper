@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 半導体・AIなど先端産業の人材養成機関として改めて注目を浴びる高専。その教育の最大の特徴が「午前中に理論を学び、午後に実習で試す」という実践教育だ。求人倍率が20倍超と異次元の水準となる理由もここにある。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 半導体・AIなど先端産業の人材養成機関として改めて注目を浴びる高専。その教育の最大の特徴が「午前中に理論を学び、午後に実習で試す」という実践教育だ。求人倍率が20倍超と異次元の水準となる理由もここにある。...",
+    "summarization_status": "summarized_by_llm"
 }

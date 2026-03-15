@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 北朝鮮のメディアは、キム・ジョンウン（金正恩）総書記の立ち会いのもと、14日、多連装ロケット砲の発射訓練が行われたと伝えました。現在、行われているアメリカ軍と韓国軍の定例の合同軍事演習に北朝鮮側が強く…",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 北朝鮮のメディアは、キム・ジョンウン（金正恩）総書記の立ち会いのもと、14日、多連装ロケット砲の発射訓練が行われたと伝えました。現在、行われているアメリカ軍と韓国軍の定例の合同軍事演習に北朝鮮側が強く…...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 今、あらためて「高専」が注目されている。2026年3月卒業予定の大卒求人倍率は1.66倍だったが、高専卒の求人倍率は20倍を超える。産業界が熱視線を送る理由は、高専生が備える実践的な技術力と主体性の高さにある。AI（人工知能）や半導体など、先端産業の中核人材を輩出する高専の実像に迫る。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 今、あらためて「高専」が注目されている。2026年3月卒業予定の大卒求人倍率は1.66倍だったが、高専卒の求人倍率は20倍を超える。産業界が熱視線を送る理由は、高専生が備える実践的な技術力と主体性の高さにある。AI（人工知能）や半導体など、先端産業の中核人材を輩出する高専の実像に迫る。...",
+    "summarization_status": "summarized_by_llm"
 }

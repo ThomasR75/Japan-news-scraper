@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 競合との「協調的競争」は単独では対応が難しい課題を解決し、存続の危機を再生の好機に転換する力を持つ。競い合うことばかりに目を向けず、透明性の高い連携を通じて、業界全体の底上げを目指す戦略を採るべきだ。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 競合との「協調的競争」は単独では対応が難しい課題を解決し、存続の危機を再生の好機に転換する力を持つ。競い合うことばかりに目を向けず、透明性の高い連携を通じて、業界全体の底上げを目指す戦略を採るべきだ。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 「トランプさん、ありがとう！」。米国によるイラン攻撃を歓迎する在日イラン人。そのわけとは。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 「トランプさん、ありがとう！」。米国によるイラン攻撃を歓迎する在日イラン人。そのわけとは。...",
+    "summarization_status": "summarized_by_llm"
 }

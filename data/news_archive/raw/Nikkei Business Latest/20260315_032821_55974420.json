@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 「売れなくても儲かる仕組み」をつくり成長するドラッグストア、ゲンキー。以下の内、同社の戦略で正しいものは？",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 「売れなくても儲かる仕組み」をつくり成長するドラッグストア、ゲンキー。以下の内、同社の戦略で正しいものは？...",
+    "summarization_status": "summarized_by_llm"
 }

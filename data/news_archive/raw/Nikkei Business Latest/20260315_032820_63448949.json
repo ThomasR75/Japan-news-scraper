@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 保守系高級紙として知られる英紙「テレグラフ」を、ドイツのメディアグループ大手「アクセル・シュプリンガー」が買収する。アクセル・シュプリンガーはドイツのタブロイド紙「ビルト」や米政治報道サイトの「ポリティコ」などを保有。家族経営による独立ジャーナリズムを標榜する。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 保守系高級紙として知られる英紙「テレグラフ」を、ドイツのメディアグループ大手「アクセル・シュプリンガー」が買収する。アクセル・シュプリンガーはドイツのタブロイド紙「ビルト」や米政治報道サイトの「ポリティコ」などを保有。家族経営による独立ジャーナリズムを標榜する。...",
+    "summarization_status": "summarized_by_llm"
 }

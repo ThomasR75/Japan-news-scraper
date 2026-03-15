@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 日本や欧米にとって、「ルールに基づく国際秩序」と「国際法」はほぼ同じ。ルールに基づく国際秩序を具現化したものが国際法であると認識している。これに対して中国は「西側は『ルールに基づく国際秩序』という概念をつくり出し、『ルール』を自分たちに都合のいいように利用している。ダブルスタンダードも横行している」と考えている。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 日本や欧米にとって、「ルールに基づく国際秩序」と「国際法」はほぼ同じ。ルールに基づく国際秩序を具現化したものが国際法であると認識している。これに対して中国は「西側は『ルールに基づく国際秩序』という概念をつくり出し、『ルール』を自分たちに都合のいいように利用している。ダブルスタンダードも横行している」と考えている。...",
+    "summarization_status": "summarized_by_llm"
 }

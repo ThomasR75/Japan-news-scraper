@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 高市自民党の圧倒的な勝利で、いよいよ政策のかじ取りに焦点が移ってきた。「責任ある積極財政」を掲げる高市政権。財政拡張を警戒する声が高まっていたが、リアリスティックな路線への微妙な変化が見られるようになってきた。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 高市自民党の圧倒的な勝利で、いよいよ政策のかじ取りに焦点が移ってきた。「責任ある積極財政」を掲げる高市政権。財政拡張を警戒する声が高まっていたが、リアリスティックな路線への微妙な変化が見られるようになってきた。...",
+    "summarization_status": "summarized_by_llm"
 }

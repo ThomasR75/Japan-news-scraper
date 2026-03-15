@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 明治ホールディングス傘下の明治が、消費者や社員の惜しむ声を振り切り、ロングセラー菓子「チェルシー」の販売を終えた。事業の見極めを担う「事業戦略レビュー」が、数値に基づく冷静な目で決断を下した。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 明治ホールディングス傘下の明治が、消費者や社員の惜しむ声を振り切り、ロングセラー菓子「チェルシー」の販売を終えた。事業の見極めを担う「事業戦略レビュー」が、数値に基づく冷静な目で決断を下した。...",
+    "summarization_status": "summarized_by_llm"
 }

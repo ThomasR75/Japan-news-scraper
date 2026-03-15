@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 米国とイスラエルによるイラン攻撃から2週間。世界の多くの航空会社はいまだ定期便の再開を見通せずにいる。英国のブリティッシュ・エアウェイズはアブダビ便を「今年後半まで」取りやめると発表。日本航空（JAL）のドーハ便を含め、欠航期間がじりじりと延びている。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 米国とイスラエルによるイラン攻撃から2週間。世界の多くの航空会社はいまだ定期便の再開を見通せずにいる。英国のブリティッシュ・エアウェイズはアブダビ便を「今年後半まで」取りやめると発表。日本航空（JAL）のドーハ便を含め、欠航期間がじりじりと延びている。...",
+    "summarization_status": "summarized_by_llm"
 }

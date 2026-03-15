@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] イラン情勢を受けてNHKの「日曜討論」に各党の政策責任者らが出演し、今後の政府の対応などをめぐって意見を交わしました。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] イラン情勢を受けてNHKの「日曜討論」に各党の政策責任者らが出演し、今後の政府の対応などをめぐって意見を交わしました。...",
+    "summarization_status": "summarized_by_llm"
 }

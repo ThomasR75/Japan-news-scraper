@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 高専生への注目が高まるが、生涯賃金は大卒より約4000万円低い。三谷産業は2026年度から、高専卒の初任給を大卒以上に見直した。学位なき制度にも弊害。官民で潜在力を引き出す仕組みづくりが必要だ。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 高専生への注目が高まるが、生涯賃金は大卒より約4000万円低い。三谷産業は2026年度から、高専卒の初任給を大卒以上に見直した。学位なき制度にも弊害。官民で潜在力を引き出す仕組みづくりが必要だ。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] WBCで侍ジャパンを支えるミズノ。実は、物流や建設などの現場でも存在感を高めている。スポーツウエアの技術を応用した作業着や安全靴が支持を広げ、作業着事業は5年で売上高が3倍に拡大した。スポーツの知見が働く現場を変える。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] WBCで侍ジャパンを支えるミズノ。実は、物流や建設などの現場でも存在感を高めている。スポーツウエアの技術を応用した作業着や安全靴が支持を広げ、作業着事業は5年で売上高が3倍に拡大した。スポーツの知見が働く現場を変える。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 全国の高専がAIのスキルを取り込んで人材輩出力を高めている。「よく手が動く高専生はAI時代に即応できる」と専門家も太鼓判を押す。日本の勝ち筋とされる「フィジカルAI」の担い手として期待が膨らむ。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 全国の高専がAIのスキルを取り込んで人材輩出力を高めている。「よく手が動く高専生はAI時代に即応できる」と専門家も太鼓判を押す。日本の勝ち筋とされる「フィジカルAI」の担い手として期待が膨らむ。...",
+    "summarization_status": "summarized_by_llm"
 }

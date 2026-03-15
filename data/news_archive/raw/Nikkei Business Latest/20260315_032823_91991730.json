@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] 日本初のデジタルフォワーダーとして、貿易業務のDX化を推進してきた。属人化が進み、ブラックボックスになっていた貿易業務の「見える化」を実現。AI活用で業務の差配は約7割自動化、専門業務の一部は9割の自動化に成功した。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] 日本初のデジタルフォワーダーとして、貿易業務のDX化を推進してきた。属人化が進み、ブラックボックスになっていた貿易業務の「見える化」を実現。AI活用で業務の差配は約7割自動化、専門業務の一部は9割の自動化に成功した。...",
+    "summarization_status": "summarized_by_llm"
 }

@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] WBC＝ワールド・ベースボール・クラシック、日本代表はベネズエラ代表との準々決勝に臨んでいます。日本は途中出場の森下翔太選手がスリーランホームランを打ち、勝ち越しましたが、その後、ベネズエラのホームラ…",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] WBC＝ワールド・ベースボール・クラシック、日本代表はベネズエラ代表との準々決勝に臨んでいます。日本は途中出場の森下翔太選手がスリーランホームランを打ち、勝ち越しましたが、その後、ベネズエラのホームラ…...",
+    "summarization_status": "summarized_by_llm"
 }

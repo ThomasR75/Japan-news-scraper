@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ことし1月、東京 台東区の路上で、中国籍や日本人のグループが4億円余りを奪われた事件で、逮捕された7人のうち、実行役とみられる暴力団員の関係先から、現金およそ1000万円が見つかったことが捜査関係者へ…",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ことし1月、東京 台東区の路上で、中国籍や日本人のグループが4億円余りを奪われた事件で、逮捕された7人のうち、実行役とみられる暴力団員の関係先から、現金およそ1000万円が見つかったことが捜査関係者へ…...",
+    "summarization_status": "summarized_by_llm"
 }

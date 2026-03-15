@@ -8,5 +8,7 @@
     "language": "ja",
     "status": "raw",
     "translated_text": "[LLM_TRANSLATED] ⻑く家族経営だった中川政七商店は非ファミリー社⻑に移⾏後も順調に成⻑が続く。ビジョンを重視する経営にこだわりながらビジネスの幅も着実に広げる。将来を⾒据えた⼿も打ち、海外進出に向けた準備も時間をかけて進めている。",
-    "translation_status": "translated_by_llm"
+    "translation_status": "translated_by_llm",
+    "summary": "[LLM_SUMMARIZED] [LLM_TRANSLATED] ⻑く家族経営だった中川政七商店は非ファミリー社⻑に移⾏後も順調に成⻑が続く。ビジョンを重視する経営にこだわりながらビジネスの幅も着実に広げる。将来を⾒据えた⼿も打ち、海外進出に向けた準備も時間をかけて進めている。...",
+    "summarization_status": "summarized_by_llm"
 }
