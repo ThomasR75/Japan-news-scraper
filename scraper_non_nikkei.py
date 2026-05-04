@@ -35,10 +35,10 @@ LIGHTPANDA_BIN = '/home/blablom/.local/bin/lightpanda'
 
 # ── Sources: requests path (static HTML, fast) ────────────────────────────────
 REQUESTS_SOURCES = [
-    # Asahi (3)
-    ("Asahi Politics",       "https://www.asahi.com/politics/",       "a[href*='/articles/']", "h1, h1[class*='title']", "time", "article p, .article-body p"),
-    ("Asahi Business",      "https://www.asahi.com/business/",        "a[href*='/articles/']", "h1, h1[class*='title']", "time", "article p, .article-body p"),
-    ("Asahi International", "https://www.asahi.com/international/",    "a[href*='/articles/']", "h1, h1[class*='title']", "time", "article p, .article-body p"),
+    # Asahi (3) — uses obfuscated CSS-in-JS classes; main p is the stable selector
+    ("Asahi Politics",       "https://www.asahi.com/politics/",       "a[href*='/articles/']", "h1, h1[class*='title']", "time", "main p"),
+    ("Asahi Business",      "https://www.asahi.com/business/",        "a[href*='/articles/']", "h1, h1[class*='title']", "time", "main p"),
+    ("Asahi International", "https://www.asahi.com/international/",    "a[href*='/articles/']", "h1, h1[class*='title']", "time", "main p"),
     # Mainichi (3)
     ("Mainichi Politics",     "https://mainichi.jp/seiji/",            "a[href*='/articles/']", "h1, h1[class*='title']", "time", "article p, .article-body p"),
     ("Mainichi International","https://mainichi.jp/world/",             "a[href*='/articles/']", "h1, h1[class*='title']", "time", "article p, .article-body p"),
@@ -226,8 +226,8 @@ def _scrape_rss_source(name, rss_url, max_articles=10):
             if article_resp.status_code != 200:
                 continue
             soup = BeautifulSoup(article_resp.text, 'html.parser')
-            # NHK article body selector
-            body = ' '.join(p.get_text(strip=True) for p in soup.select('article p, .NewsBody p, .article-body p'))
+            # NHK uses obfuscated CSS-in-JS; main p is the stable selector
+            body = ' '.join(p.get_text(strip=True) for p in soup.select('main p'))
             if _save_article(name, link, title, body, date_str):
                 SESSION_URLS_SET.add(link)
                 saved += 1
