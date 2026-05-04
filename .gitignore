@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+
+# Generated output
+data/reports/
+data/news_archive/raw/
+data/news_archive/backup/
+data/news_archive/*.db
+data/news_archive/*.json
+digests/
+logs/
