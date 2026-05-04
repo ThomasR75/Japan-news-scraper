@@ -38,8 +38,8 @@ def file_age_dt(path, data):
 
 def main():
     parser = argparse.ArgumentParser(description='Clean up old article JSON files')
-    parser.add_argument('--days', type=int, default=7,
-                        help='Delete files older than this many days (default: 7)')
+    parser.add_argument('--days', type=int, default=3,
+                        help='Delete files older than this many days (default: 3)')
     parser.add_argument('--dry-run', action='store_true',
                         help='Print what would be deleted without deleting')
     args = parser.parse_args()
