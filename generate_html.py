@@ -216,7 +216,7 @@ def load_articles_for_date(date_str, max_age_hours=None):
     articles_by_source = {}
     now = datetime.now(JP)
     if max_age_hours:
-        cutoff = now - timedelta(hours=max_age_hours)
+        cutoff = now.replace(tzinfo=None) - timedelta(hours=max_age_hours)
     
     if not os.path.exists(base):
         print(f"Archive directory {base} not found!")
@@ -323,7 +323,7 @@ if __name__ == '__main__':
     # ── Additional 24h time filter for non-Nikkei articles ─────────────────
     # Skip articles with fetch_timestamp older than 24h (from JST now)
     cutoff_hours = 24
-    cutoff = jst_now - timedelta(hours=cutoff_hours)
+    cutoff = jst_now.replace(tzinfo=None) - timedelta(hours=cutoff_hours)
     before_count = sum(len(v) for v in articles_by_source.values())
     filtered_by_source = {}
     for src, arts in articles_by_source.items():
@@ -333,7 +333,7 @@ if __name__ == '__main__':
             continue
         filtered = []
         for art in arts:
-            ts_str = art.get('fetch_timestamp', '') or art.get('translated_at', '')
+            ts_str = art.get('scraped_at', '') or art.get('fetch_timestamp', '') or art.get('translated_at', '')
             if ts_str:
                 try:
                     ts_dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
