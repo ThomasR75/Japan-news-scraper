@@ -34,6 +34,7 @@ python3 translate_minimax.py                     # step 3: translate all untrans
 python3 generate_html.py --exclude-nikkei        # step 4: non-Nikkei digest
 python3 generate_html.py --nikkei-only           # step 5: Nikkei digest
 /home/blablom/bin/send_digests.sh DATE           # step 6: Telegram delivery
+python3 cleanup_archive.py --days 7              # step 6: delete articles older than 7 days
 ```
 
 Quick diagnostics:
@@ -65,6 +66,7 @@ grep -c 'class="article"' digests/nikkei_daily_$(TZ=Asia/Tokyo date +%Y-%m-%d).h
 4. `python3 generate_html.py --exclude-nikkei` → `data/reports/daily_digest_non-nikkei_DATE.html`
 5. `python3 generate_html.py --nikkei-only` → `data/reports/daily_digest_nikkei_DATE.html`, then copied to `digests/nikkei_daily_DATE.html`.
 6. `/home/blablom/bin/send_digests.sh DATE` — Telegram delivery to chat `8004116253`.
+7. `cleanup_archive.py --days 7` — deletes article JSON files older than 7 days from `data/news_archive/raw/`, removes empty source directories.
 
 Logs: `logs/pipeline_YYYY-MM-DD.log`.
 
