@@ -80,8 +80,8 @@ journalctl --user -u japan-news-pipeline.service -n 100
 
 ## Source list (all currently in scope)
 
-**Non-Nikkei** (18 targets — see `ref-non-nikkei-scraper.md` for live status):
-Asahi (Politics, Business, International) · Mainichi (Politics, International, Economy) · Sankei (Politics, Economy, International) · FNN (Politics, Economy, International) · NHK (Politics, International, Economy) · Yomiuri (Politics, Economy, International — currently deferred)
+**Non-Nikkei** (20 sources — see `ref-non-nikkei-scraper.md` for live status):
+Asahi (Politics, Business, International) · Mainichi (Politics, International, Economy) · Sankei (Politics, Economy, International) · FNN (Politics, Economy, International) · NHK (Politics, International, Economy) · Yomiuri (Politics, Economy, International, Society, Local — paywalled teasers, thin yield)
 
 **Nikkei** (6+ sections — see `ref-nikkei-scraper.md`):
 Nikkei_Business · Nikkei_Economy · Nikkei_Finance · Nikkei_International · Nikkei_Markets · Nikkei_Politics

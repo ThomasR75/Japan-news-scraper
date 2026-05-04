@@ -1,0 +1,14 @@
+{
+    "url": "https://mainichi.jp/articles/20260501/k00/00m/020/332000c",
+    "title": "最新AI「ミュトス」問題　経産省とインフラ事業者が意見交換",
+    "extracted_text": "サイバー攻撃への悪用が強く懸念されている米アンソロピックの新型人工知能（AI）「クロード・ミュトス」を巡り、赤沢亮正経済産業相は1日、電気事業者などと意見交換会を開いた。赤沢氏は「サイバーセキュリティーは経営上の最優先課題」として、電力事業者にIT基盤を確認・報告するよう求めた。 クロード・ミュトスは、これまで数週間から数カ月かかった脆弱（ぜいじゃく）性の発見を数分から数時間で終える能力を持ち、人間では見つけられない脆弱性も発見可能。サイバー攻撃に使われればインフラの機能停止にもつながる可能性があるとされる。 意見交換会には電気事業連合会の森望会長や日本ガス協会の内田高史会長ら重要インフラの業界団体幹部と電力事業者24社が参加。赤沢氏は特に電力24社に「社会インフラの基盤で影響が大きい」として、1カ月をめどに自社のIT基盤の状況を確認・報告するよう求めた。出席者からは「政府には情報提供や人材育成の支援をしてほしい」といった意見が出たという。 経産省の担当者は「従来のようにインターネットとの接続口を重点的に守る『境界型防御』だけではなく、内部システムのあらゆる不審な挙動を常時確認する『ゼロトラスト』に基づいたシステム設計、玄関口だけではなく各部屋をチェックする体制に変えていく必要がある」と話した。【渡辺暢】",
+    "source": "Mainichi Economy",
+    "date": "2026-05-04",
+    "language": "ja",
+    "scraped_at": "2026-05-04T09:02:41.557494+09:00",
+    "scraper": "requests",
+    "translated_text": "Minister of Economy, Trade and Industry Akazawa Ryosei held an exchange meeting with electric power companies and others on the 1st regarding the new artificial intelligence (AI) 'Claude Mytos' from US Anthropic, which is strongly feared to be vulnerable to malicious use in cyberattacks. Akazawa stated that 'cybersecurity is the top priority in management' and asked power companies to verify and report on their IT infrastructure. Claude Mytos has the ability to identify vulnerabilities that previously took from several weeks to several months in just a few minutes to hours, and can even find vulnerabilities that humans cannot detect. It is believed that if used for cyberattacks, it could even lead to infrastructure failures. The exchange meeting was attended by chairpersons of important infrastructure industry groups including Electric Power Association chair Nozomi Mori and Japan Gas Association chair Takashi Uchida, as well as 24 power companies. Akazawa specifically asked the 24 power companies to verify and report on their IT infrastructure status within one month, noting that they have a significant impact on social infrastructure. Attendees expressed hopes for government support in information provision and human resource development. A METI official said that it is necessary to shift from the traditional 'perimeter-based defense' that focuses on protecting the internet connection points to system design based on 'zero trust' that constantly monitors all suspicious behavior in internal systems, and to change the structure to check every room, not just the entrance. [Noboru Watanabe]",
+    "title_en": "METI and Infrastructure Operators Discuss Latest AI 'Mytos' Issue",
+    "translated_at": "2026-05-04T09:09:43.184300+09:00",
+    "translated_by": "MiniMax-M2.7"
+}

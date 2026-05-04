@@ -1,0 +1,14 @@
+{
+    "url": "https://www.asahi.com/articles/ASV512DG1V51ULFA006M.html?iref=pc_business_top__n",
+    "title": " 第4回上場企業で金塊マネー循環か　銀行口座の履歴に残る不自然な出入金",
+    "extracted_text": "東証スタンダード上場のunbanked（アンバンク）から金塊を大量に買い受けたものの、13億円超の代金を同社に払わなかった会社のものだ。 金塊の取引が始まった昨夏から記録をたどると、億単位の代金が何度もunbankedへ送金されている。それらは金塊の購入代金とおおよそ一致する。 では、購入代金の原資となる資金は、どこから得ていたのだろうか。取引と同時期に繰り返された多額の入金の振込元には、見覚えのある企業名が記されていた――。 unbankedは昨年7月、大株主となった「Akatsuki Capital Works（アカツキ）」から派遣された担当者らの提案で金塊取引を開始。金塊の仕入れ先2社と販売先1社を紹介され、転売取引を27回行ったが、最後の2回で代金が払われないトラブルに発展した。 報道通りなら、問題の核心は金塊取引そのものより、上場企業が経済合理性の乏しい取引に入り、取引先・資金原資・実質支配者の確認が不十分だった点にあります。売上や利益に見える取引でも、資金が循環していれば実態はまったく違います。上場企業には、成長",
+    "source": "Asahi Business",
+    "date": "2026-05-04",
+    "language": "ja",
+    "scraped_at": "2026-05-04T11:21:52.256191+09:00",
+    "scraper": "requests",
+    "translated_text": "This is about a company that purchased large quantities of gold bars from unbanked, a TSE Standard-listed company, but failed to pay over 1.3 billion yen to the company. Tracing the records since gold trading began last summer, orders of hundreds of millions of yen were sent to unbanked multiple times. These amounts roughly matched the purchase prices for the gold. So where did the funds for the purchase originate? The sources of the large, repeated deposits made during the same period as the transactions included company names that seemed familiar. unbanked launched its gold trading business in July last year at the proposal of representatives sent from Akatsuki Capital Works, a major shareholder. The company was introduced to two gold suppliers and one buyer, and conducted resale transactions 27 times, but trouble arose when payment was not made for the last two transactions. As reported, the core of the problem lies not in the gold trading itself, but in the fact that the listed company engaged in economically irrational transactions and failed to adequately verify its trading partners, funding sources, and actual controllers. Transactions that appear to be sales or profits look completely different when the funds are merely circulating. For a growing listed company, this represents a significant management risk.",
+    "title_en": "Is Money Circulating Through Gold Bars at a Listed Company? Unnatural Deposits and Withdrawals in Bank Account History",
+    "translated_at": "2026-05-04T11:23:01.660862+09:00",
+    "translated_by": "MiniMax-M2.7"
+}
