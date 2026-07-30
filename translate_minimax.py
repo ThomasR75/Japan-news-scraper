@@ -1,7 +1,7 @@
 import json, glob, os, sys, time
 from datetime import datetime, timezone, timedelta
 
-from minimax_translate import translate
+from minimax_translate import translate, MODEL
 
 JP = timezone(timedelta(hours=9))
 BASE = '/home/blablom/.openclaw/workspace/japan_news_scraper/data/news_archive/raw'
@@ -90,7 +90,9 @@ for i, (section, f) in enumerate(todo, 1):
         if r.get('title_en'):
             d['title_en'] = r['title_en']
         d['translated_at'] = datetime.now(JP).isoformat()
-        d['translated_by'] = 'MiniMax-M2.7'
+        # Derived from minimax_translate.MODEL, not hardcoded: this label was
+        # stamped 'MiniMax-M2.7' while the API call actually sent M2.5.
+        d['translated_by'] = MODEL
         save_json_atomic(f, d)
         done += 1
         section_counts[section] = section_counts.get(section, 0) + 1

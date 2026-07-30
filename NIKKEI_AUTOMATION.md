@@ -4,7 +4,8 @@ The Nikkei pipeline is no longer agent-driven. This document supersedes any earl
 
 ## How Nikkei is scraped now
 
-**Script:** `/home/blablom/bin/nikkei_scraper.py`
+**Script:** `~/.openclaw/workspace/nikkei_scraper/nikkei_scraper.py`
+*(was `~/bin/nikkei_scraper.py` until the 2026-06-22 rebuild; path corrected 2026-07-28)*
 **Method:** plain `requests` + paid-subscription cookies. No browser, no Chrome, no Xvfb, no Windows node.
 **Output:** JSON files in `data/news_archive/raw/Nikkei_<Section>/YYYYMMDD_HHMMSS_<hash>.json`
 
@@ -12,7 +13,7 @@ Sections covered: `Nikkei_Business`, `Nikkei_Economy`, `Nikkei_Finance`, `Nikkei
 
 ## How it fits in the pipeline
 
-Nikkei is **step 2** of the daily pipeline orchestrated by `~/bin/run_japan_news_pipeline.sh`:
+Nikkei is **step 2** of the daily pipeline orchestrated by `japan_news_scraper/run.sh`:
 
 ```
 non-Nikkei scrape → Nikkei scrape → translate (MiniMax) → 2x generate_html.py → send_digests.sh
@@ -48,7 +49,7 @@ After translation (`translate_minimax.py`) the file gains:
 ## Manual run
 
 ```bash
-python3 /home/blablom/bin/nikkei_scraper.py
+python3 ~/.openclaw/workspace/nikkei_scraper/nikkei_scraper.py
 ```
 
 ## Login / cookies

@@ -4,9 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Entry point
 
-`/home/blablom/bin/run_japan_news_pipeline.sh` — runs the full pipeline.
+`run.sh` (in this directory) — orchestrates the full pipeline.
 
-Scheduled by systemd user timer `japan-news-pipeline.timer` at 05:00 JST daily. Manage with:
+> Scripts moved out of `~/bin/` into the workspace when the pipeline was rebuilt **2026-06-22** after the workspace deletion (see `run.sh:8-9`). `~/bin/run_japan_news_pipeline.sh` and `~/bin/nikkei_scraper.py` **no longer exist**; only `~/bin/send_digests.sh` survived. Docs corrected 2026-07-28.
+
+`run.sh` has two failure modes, deliberately: **scraper** steps log and continue (a partial digest still goes out), while **translate** and **generate_html** steps abort the pipeline (`run_scraper` vs `run_strict`). So a missing source is survivable; a broken translator is not.
+
+Scheduled by systemd user timer `japan-news-pipeline.timer`, `OnCalendar` 20:00 UTC = 05:00 JST daily. Manage with:
 
 ```bash
 systemctl --user list-timers japan-news-pipeline.timer
@@ -25,16 +29,22 @@ cd /home/blablom/.openclaw/workspace/japan_news_scraper
 source venv/bin/activate
 ```
 
-Run individual pipeline steps:
+Run the whole thing (what the timer does):
+
+```bash
+./run.sh
+```
+
+Or individual pipeline steps:
 
 ```bash
 python3 scraper_non_nikkei.py                    # step 1: 18+ non-Nikkei sources
-python3 /home/blablom/bin/nikkei_scraper.py      # step 2: 6 Nikkei sections
+python3 ../nikkei_scraper/nikkei_scraper.py      # step 2: 6 Nikkei sections
 python3 translate_minimax.py                     # step 3: translate all untranslated articles
 python3 generate_html.py --exclude-nikkei        # step 4: non-Nikkei digest
 python3 generate_html.py --nikkei-only           # step 5: Nikkei digest
-/home/blablom/bin/send_digests.sh DATE           # step 6: Telegram delivery
-python3 cleanup_archive.py                       # step 6: delete articles older than 3 days (default)
+/home/blablom/bin/send_digests.sh DATE           # step 6: Telegram delivery (still in ~/bin)
+python3 cleanup_archive.py                       # step 7: delete articles older than 3 days (default)
 ```
 
 Quick diagnostics:
@@ -61,7 +71,7 @@ grep -c 'class="article"' digests/nikkei_daily_$(TZ=Asia/Tokyo date +%Y-%m-%d).h
 ## Pipeline steps
 
 1. `scraper_non_nikkei.py` — 18+ non-Nikkei sources (requests / RSS). Sources: 3 Asahi, 3 Mainichi, 3 Sankei, 3 FNN, 3 NHK (all via requests/RSS), plus 5 Yomiuri. Retries once on failure, then continues.
-2. `/home/blablom/bin/nikkei_scraper.py` — 6 Nikkei sections (requests + paid-subscription cookies). Retries once, then continues.
+2. `../nikkei_scraper/nikkei_scraper.py` — 6 Nikkei sections (requests + paid-subscription cookies). Retries once, then continues.
 3. `translate_minimax.py` — MiniMax translates anything with `extracted_text` missing `translated_text`, or `title` missing `title_en`. Imports `minimax_translate.py`. Failure aborts the pipeline.
 4. `python3 generate_html.py --exclude-nikkei` → `data/reports/daily_digest_non-nikkei_DATE.html`
 5. `python3 generate_html.py --nikkei-only` → `data/reports/daily_digest_nikkei_DATE.html`, then copied to `digests/nikkei_daily_DATE.html`.
@@ -95,7 +105,8 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 
 - `PIPELINE_CHECKLIST.md` — full pre-send checks, quality thresholds. **Source of truth** — wins over anything else.
 - `NIKKEI_AUTOMATION.md` — Nikkei-specific current approach.
-- `~/.openclaw/workspace/memory/ref-nikkei-scraper.md` and `ref-non-nikkei-scraper.md` — agent-readable reference notes (include source status table).
+- `ref-nikkei-scraper.md` — **in this directory**, not `workspace/memory/` as previously documented. Agent-readable reference notes incl. the source status table.
+- `ref-non-nikkei-scraper.md` — **gone.** Not on disk anywhere as of 2026-07-28 and not listed in `LOST_PROJECTS.md`; presumed lost in the 2026-06-22 workspace deletion. The non-Nikkei source list lives in `scraper_non_nikkei.py` (`REQUESTS_SOURCES` / `RSS_SOURCES` / `YOMIURI_SOURCES`) — treat the code as authoritative.
 
 ## Common failure modes
 
@@ -109,11 +120,11 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 ## Paths cheatsheet
 
 - Non-Nikkei scraper: `scraper_non_nikkei.py` (this dir)
-- Nikkei scraper: `/home/blablom/bin/nikkei_scraper.py`
-- Translator: `translate_minimax.py` (uses `minimax_translate.py`)
+- Nikkei scraper: `~/.openclaw/workspace/nikkei_scraper/nikkei_scraper.py`
+- Translator: `translate_minimax.py` (uses `minimax_translate.py`; model pinned as `MODEL` in the latter, and `translated_by` derives from it)
 - Digest builder: `generate_html.py` (this dir)
-- Telegram sender: `/home/blablom/bin/send_digests.sh`
-- Pipeline entry: `/home/blablom/bin/run_japan_news_pipeline.sh`
+- Telegram sender: `/home/blablom/bin/send_digests.sh` (the one script still in `~/bin/`)
+- Pipeline entry: `run.sh` (this dir)
 - Raw articles: `data/news_archive/raw/<section>/`
 - Output digests: `data/reports/daily_digest_{nikkei,non-nikkei}_DATE.html` + `digests/nikkei_daily_DATE.html`
 - Logs: `logs/pipeline_DATE.log`

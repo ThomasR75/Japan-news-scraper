@@ -21,14 +21,20 @@ Two files delivered to Telegram every morning:
 
 ## Pipeline (current)
 
-**Entry point:** `/home/blablom/bin/run_japan_news_pipeline.sh`
+**Entry point:** `~/.openclaw/workspace/japan_news_scraper/run.sh`
 
-**Scheduled by:** systemd user timer `japan-news-pipeline.timer` at 05:00 JST daily.
+> Paths moved out of `~/bin/` into the workspace when the pipeline was
+> rebuilt **2026-06-22** after the workspace deletion (`run.sh:8-9`). Only
+> `send_digests.sh` still lives in `~/bin/` — it survived the rm. Docs were
+> corrected 2026-07-28; anything still pointing at `~/bin/` for the entry
+> point, the Nikkei scraper or the translator is pre-migration and wrong.
 
-**Steps (in order):**
+**Scheduled by:** systemd user timer `japan-news-pipeline.timer`, `OnCalendar` 20:00 UTC = 05:00 JST daily.
+
+**Steps (in order):** — all driven by `run.sh`; the paths below are what it invokes
 1. `python3 scraper_non_nikkei.py` — 18 non-Nikkei sources (requests / RSS / Lightpanda)
-2. `python3 /home/blablom/bin/nikkei_scraper.py` — 6 Nikkei sections (requests + cookies)
-3. `python3 /home/blablom/bin/translate_minimax.py` — MiniMax translates everything missing `translated_text` or `title_en`
+2. `python3 ../nikkei_scraper/nikkei_scraper.py` — 6 Nikkei sections (requests + cookies)
+3. `python3 translate_minimax.py` — MiniMax translates everything missing `translated_text` or `title_en`
 4. `python3 generate_html.py --exclude-nikkei` — non-Nikkei digest
 5. `python3 generate_html.py --nikkei-only` — Nikkei digest, then copied to `digests/nikkei_daily_DATE.html`
 6. `/home/blablom/bin/send_digests.sh DATE` — sends both files to Telegram chat 8004116253
@@ -39,7 +45,7 @@ Scraper failures retry once and then continue (the digest still goes out with wh
 
 **Manual run:**
 ```bash
-/home/blablom/bin/run_japan_news_pipeline.sh
+~/.openclaw/workspace/japan_news_scraper/run.sh
 ```
 
 **Check timer:**
@@ -93,7 +99,7 @@ Nikkei_Business · Nikkei_Economy · Nikkei_Finance · Nikkei_International · N
 | Problem | Cause | Fix |
 |---|---|---|
 | Pipeline reports `Files needing translation: 0` but no Nikkei in digest | Old `EXCLUDE = ('Nikkei',)` line in translator | Make sure `translate_minimax.py` doesn't filter Nikkei |
-| Today's digest stale | Pipeline ran before scrapes finished, or before translation | Re-run `run_japan_news_pipeline.sh` manually |
+| Today's digest stale | Pipeline ran before scrapes finished, or before translation | Re-run `run.sh` manually |
 | Telegram send fails with "MISSING" | One of the digest files wasn't produced | Check log for the `generate_html.py` step that failed |
 | Nikkei digest empty | `nikkei_scraper.py` cookies expired | Refresh cookies (see `ref-nikkei-scraper.md`) |
 
