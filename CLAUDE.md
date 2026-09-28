@@ -18,7 +18,7 @@ systemctl --user status japan-news-pipeline.service
 journalctl --user -u japan-news-pipeline.service -n 100
 ```
 
-Unit files: `~/.config/systemd/user/japan-news-pipeline.{service,timer}`.
+Unit files: `~/.config/systemd/user/japan-news-pipeline.{service,timer}` are **symlinks** into `~/.openclaw/workspace/systemd/` (the `openclaw-orchestrator` repo) as of 2026-09-29 — edit them there, commit, then `systemctl --user daemon-reload`. They were plain hand-installed files before that.
 
 ## Common commands
 
