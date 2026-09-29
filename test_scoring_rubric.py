@@ -9,7 +9,7 @@ exactly rather than within a band.
 """
 import sys
 from scoring_rubric import (load_rubric, best_axis, combine, sort_key,
-                            event_key, same_event, collapse_events, AXES)
+                            event_key, same_event, collapse_events, is_fresh, AXES)
 
 R = load_rubric()
 
@@ -78,6 +78,23 @@ def t_same_event_tolerates_wording_drift():
     print("  ✓ small wording drift groups; different stories do not")
 
 
+def t_is_fresh_windows_on_the_run_date():
+    """User finding, first live digest: 23 of the top 50 were published before
+    the 27th — the first run scored the whole 3-day archive, which also holds
+    republished pieces dated months back. Freshness is judged against the RUN
+    date: up to max_age_days behind it, and anything ahead of it (Nikkei
+    stamps evening pieces with tomorrow's paper date)."""
+    assert R["max_age_days"] == 2, R.get("max_age_days")
+    run = "2026-09-29"
+    assert is_fresh("2026-09-29T06:00:00+09:00", run, 2)
+    assert is_fresh("2026-09-27T23:00:00+09:00", run, 2), "two days back is inside the window"
+    assert not is_fresh("2026-09-26T23:59:00+09:00", run, 2), "three days back is stale"
+    assert not is_fresh("2026-06-24T10:00:00+09:00", run, 2)
+    assert is_fresh("2026-09-30T05:00:00+09:00", run, 2), "tomorrow's paper date is fresh"
+    assert is_fresh(None, run, 2), "no date at all is not treated as stale"
+    print("  ✓ freshness is a window behind the run date; future-dated is fresh; unknown is kept")
+
+
 def t_collapse_groups_and_keeps_rank_order():
     rows = [
         row(9.0, "BoJ signals October hike", "Nikkei Economy", rates=9),
@@ -100,7 +117,7 @@ if __name__ == "__main__":
                t_combine_is_best_plus_bonus_no_cap, t_no_link_still_ranks_on_coverage,
                t_commodity_story_scores_its_axis_and_nothing_more, t_ties_break_on_axis_sum,
                t_event_key_normalises, t_same_event_tolerates_wording_drift,
-               t_collapse_groups_and_keeps_rank_order):
+               t_is_fresh_windows_on_the_run_date, t_collapse_groups_and_keeps_rank_order):
         try:
             fn()
         except Exception as e:

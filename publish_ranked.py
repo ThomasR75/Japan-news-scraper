@@ -49,11 +49,11 @@ def send_document(path, caption, token, chat):
     with urllib.request.urlopen(req, timeout=60) as r:
         return bool(json.load(r).get("ok"))
 
-def top5_message(rows, run_date, rubric):
+def top5_message(rows, run_date, rubric, note=""):
     thr = float(rubric["publish_threshold"]); n = int(rubric.get("top_n_telegram", 5))
     groups = [g for g in collapse_events(rows, rubric.get("event_jaccard", 0.6)) if float(g["lead"]["score"]) >= thr]
     shown = groups[:n]
-    lines = ["📰 <b>Ranked Japan News — %s JST</b>" % run_date]
+    lines = ["📰 <b>Ranked Japan News — %s JST</b>%s" % (run_date, (" · " + esc(note)) if note else "")]
     if not groups:
         lines.append("0 above %.1f today — a quiet day." % thr)
     else:
@@ -79,20 +79,22 @@ def main(argv=None):
     ap.add_argument("--date", default=run_date_jst())
     ap.add_argument("--db", default=str(DB_PATH))
     ap.add_argument("--no-telegram", action="store_true", help="print, do not send")
+    ap.add_argument("--note", default="", help="short label on the message and caption, e.g. 'corrected' for a re-send")
     args = ap.parse_args(argv)
     rubric = load_rubric()
     conn = connect(Path(args.db))
-    rows = fetch_rows(conn, args.date)
+    rows = fetch_rows(conn, args.date, rubric.get("max_age_days"))
     if not rows:
         print("no scored rows for %s — nothing to publish" % args.date, file=sys.stderr)
         return 1
-    msg = top5_message(rows, args.date, rubric)
+    msg = top5_message(rows, args.date, rubric, note=args.note)
     html = out_path(args.date)
     if args.no_telegram:
         print(msg); print("(would send %s)" % html)
         return 0
     tok = token()
-    ok_doc = html.exists() and send_document(html, "📰 Ranked Japan News — %s JST (top 50)" % args.date + NOT_OPENCLAW, tok, CHAT_ID)
+    caption = "📰 Ranked Japan News — %s JST (top 50)%s" % (args.date, (" · " + args.note) if args.note else "")
+    ok_doc = html.exists() and send_document(html, caption + NOT_OPENCLAW, tok, CHAT_ID)
     ok_msg = send_message(msg, tok, CHAT_ID)
     print("telegram: document %s · message %s" % ("OK" if ok_doc else "FAIL/missing", "OK" if ok_msg else "FAIL"))
     return 0 if (ok_doc and ok_msg) else 1

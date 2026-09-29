@@ -14,7 +14,7 @@ import argparse, html as H, os, sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-from scoring_rubric import load_rubric, sort_key, same_event, AXES
+from scoring_rubric import load_rubric, sort_key, same_event, is_fresh, AXES
 from score_articles import connect, DB_PATH, COLS, run_date_jst
 
 HERE = Path(__file__).resolve().parent
@@ -24,9 +24,14 @@ JST = timezone(timedelta(hours=9))
 def out_path(run_date):
     return OUT_DIR / ("daily_ranked_%s.html" % run_date)
 
-def fetch_rows(conn, run_date):
+def fetch_rows(conn, run_date, max_age_days=None):
+    """Every row for the run, in rank order — minus stale ones when a window
+    is given. This is the one read path for the HTML AND the Telegram top-5,
+    so freshness lives here rather than in each publisher."""
     cur = conn.execute("SELECT %s FROM news_scores WHERE run_date=?" % ",".join(COLS), (run_date,))
     rows = [dict(zip(COLS, r)) for r in cur.fetchall()]
+    if max_age_days is not None:
+        rows = [r for r in rows if is_fresh(r.get("published_at"), run_date, max_age_days)]
     return sorted(rows, key=sort_key)
 
 def _axes_chips(r):
@@ -105,7 +110,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     rubric = load_rubric()
     conn = connect(Path(args.db))
-    rows = fetch_rows(conn, args.date)
+    rows = fetch_rows(conn, args.date, rubric.get("max_age_days"))
     try:
         html = render(rows, args.date, rubric)
     except ValueError as e:

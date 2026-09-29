@@ -52,11 +52,19 @@ def t_quiet_day_message():
     print("  ✓ nothing above threshold is stated, not padded")
 
 
+def t_note_marks_a_resend():
+    """A corrected re-send must not look identical to the copy it replaces."""
+    m = p.top5_message([mkrow(1, 8.0, "A")], "2026-09-29", R, note="corrected — stale articles removed")
+    assert "· corrected — stale articles removed" in m.splitlines()[0], m.splitlines()[0]
+    assert "·" not in p.top5_message([mkrow(1, 8.0, "A")], "2026-09-29", R).splitlines()[0]
+    print("  ✓ --note labels the header; absent by default")
+
+
 def t_no_rows_never_sends():
     sent = []
     p.send_message = lambda text, token, chat: sent.append(text) or True
     p.send_document = lambda path, caption, token, chat: sent.append(path) or True
-    p.fetch_rows = lambda conn, d: []
+    p.fetch_rows = lambda conn, d, *a: []          # (conn, run_date, max_age_days)
     rc = p.main(["--date", "2026-09-29", "--db", ":memory:"])
     assert rc == 1 and sent == []
     print("  ✓ zero rows exits 1 and sends nothing")
@@ -66,7 +74,7 @@ if __name__ == "__main__":
     print("Running publish-ranked tests...")
     failed = False
     for fn in (t_top5_collapses_events_and_respects_threshold, t_short_day_reports_its_count,
-               t_quiet_day_message, t_no_rows_never_sends):
+               t_quiet_day_message, t_note_marks_a_resend, t_no_rows_never_sends):
         try:
             fn()
         except Exception as e:

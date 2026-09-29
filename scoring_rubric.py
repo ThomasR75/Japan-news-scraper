@@ -30,6 +30,29 @@ def axis_sum(row):
 def sort_key(row):
     return (-float(row["score"]), -axis_sum(row))
 
+def is_fresh(published_at, run_date, max_age_days):
+    """Is an article recent enough for the run's digest?
+
+    Judged against the RUN date, not today: an article may be up to
+    max_age_days behind it, and anything ahead of it is fine — Nikkei stamps
+    evening pieces with the next morning's paper date. An unknown date is kept
+    (the scorer falls back to scraped_at before asking). The first live digest
+    carried 23 top-50 articles published before the window: the first run had
+    scored the whole 3-day archive, which also holds republished pieces dated
+    months back.
+    """
+    if not published_at:
+        return True
+    day = str(published_at)[:10]
+    if len(day) != 10:
+        return True
+    import datetime as _dt
+    try:
+        floor = (_dt.date.fromisoformat(run_date) - _dt.timedelta(days=int(max_age_days))).isoformat()
+    except ValueError:
+        return True
+    return day >= floor
+
 _PUNCT = re.compile(r"[^\w\s぀-ヿ一-龯]+")
 
 def event_key(label):

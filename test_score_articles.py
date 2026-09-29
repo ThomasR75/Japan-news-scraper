@@ -233,6 +233,35 @@ def t_deadline_stops_further_batches():
     print("  ✓ an expired deadline stops after the batch in flight; what was scored is kept")
 
 
+def t_stale_articles_are_never_sent_to_the_model():
+    """User finding: the first digest carried articles from June. Stale
+    articles are dropped BEFORE scoring — no tokens, no row — and an article
+    with no published_at falls back to scraped_at so it can be judged."""
+    raw = Path(tempfile.mkdtemp()); (raw / "S").mkdir()
+    today = sa.run_date_jst()
+    old = art(1, published_at="2026-06-24T10:00:00+09:00")
+    fresh = art(2, published_at=today + "T06:00:00+09:00")
+    nodate = art(3); del nodate["published_at"]; nodate["scraped_at"] = today + "T05:01:00+09:00"
+    for i, a in enumerate((old, fresh, nodate)):
+        (raw / "S" / ("%d.json" % i)).write_text(json.dumps(a), encoding="utf-8")
+    seen = []
+    def fake(prompt, rubric=None):
+        urls = [l.split("URL: ", 1)[1].strip() for l in prompt.splitlines() if l.startswith("URL: ")]
+        seen.extend(u for u in urls if not u.startswith("calibration://"))
+        return json.dumps({"articles": [item(u) for u in urls]})
+    db = Path(tempfile.mkdtemp()) / "t.db"
+    real = sa.call_model; sa.call_model = fake
+    try:
+        rc = sa.main(["--raw", str(raw), "--db", str(db)])
+    finally:
+        sa.call_model = real
+    assert rc == 0 and sorted(seen) == ["https://x/2", "https://x/3"], (rc, seen)
+    conn = sqlite3.connect(str(db))
+    rows = dict(conn.execute("SELECT url, published_at FROM news_scores").fetchall())
+    assert "https://x/1" not in rows and rows["https://x/3"] == today + "T05:01:00+09:00", rows
+    print("  ✓ a June article is never scored; a dateless one is judged on scraped_at")
+
+
 def t_connect_uses_wal():
     conn = tmpdb()
     assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "wal"
@@ -260,7 +289,7 @@ if __name__ == "__main__":
                t_scoring_model_comes_from_the_rubric_not_the_translator,
                t_store_is_idempotent_per_rubric_version,
                t_rescoring_keeps_the_original_run_date, t_zero_scored_with_work_to_do_exits_one,
-               t_deadline_stops_further_batches,
+               t_deadline_stops_further_batches, t_stale_articles_are_never_sent_to_the_model,
                t_connect_uses_wal, t_main_refuses_zero_scored):
         try:
             fn()

@@ -70,6 +70,20 @@ def t_fetch_rows_spans_the_whole_run_date():
     print("  ✓ fetch_rows returns every row for the run date, in rank order, and no other day")
 
 
+def t_stale_rows_are_excluded_from_the_document_and_the_feed():
+    """User finding on the first live digest: 23 of the top 50 were published
+    before the 27th. fetch_rows is the one read path for the HTML AND the
+    Telegram top-5, so the freshness window is applied there."""
+    rows = [mkrow(1, 9.0), mkrow(2, 8.0), mkrow(3, 12.0)]
+    rows[2]["published_at"] = "2026-06-24T10:00:00+09:00"          # highest score, stale
+    conn = db_with(rows)
+    got = g.fetch_rows(conn, "2026-09-29", max_age_days=2)
+    assert [r["url"] for r in got] == ["https://x/1", "https://x/2"], [r["url"] for r in got]
+    html = g.render(got, "2026-09-29", R)
+    assert "Title 3" not in html
+    print("  ✓ a stale row never reaches the document, however high it scored")
+
+
 def t_main_writes_atomically():
     conn = db_with([mkrow(1, 9.0)])
     db = conn.execute("PRAGMA database_list").fetchone()[2]
@@ -86,7 +100,7 @@ if __name__ == "__main__":
     failed = False
     for fn in (t_zero_rows_raises, t_renders_top_50_with_sources, t_same_story_marker_on_adjacent_rows,
                t_quiet_day_banner_when_none_above_threshold, t_fetch_rows_spans_the_whole_run_date,
-               t_main_writes_atomically):
+               t_stale_rows_are_excluded_from_the_document_and_the_feed, t_main_writes_atomically):
         try:
             fn()
         except Exception as e:

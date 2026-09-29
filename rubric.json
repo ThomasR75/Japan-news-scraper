@@ -17,6 +17,7 @@
     "3": "direct: moves the thesis itself"
   },
   "publish_threshold": 6.0,
+  "max_age_days": 2,
   "top_n_html": 50,
   "top_n_telegram": 5,
   "event_jaccard": 0.6,

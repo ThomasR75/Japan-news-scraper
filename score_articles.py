@@ -19,7 +19,7 @@ import argparse, json, os, sqlite3, sys, time, urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-from scoring_rubric import load_rubric, AXES, combine, best_axis, sort_key
+from scoring_rubric import load_rubric, AXES, combine, sort_key, is_fresh
 from thesis_match import load_theses, all_theses, theses_hash, candidates, clamp_strength
 from generate_html import dedup_articles_by_japanese_shingles
 from minimax_translate import get_endpoint_and_key, MODEL
@@ -267,7 +267,7 @@ def make_row(article, item, rubric, matched, run_date, thash):
     tid = item["thesis"].get("id") or None
     strength = clamp_strength(item["thesis"].get("strength", 0), matched) if tid else 0
     row = {"url": article["url"], "run_date": run_date,
-           "published_at": article.get("published_at") or article.get("date"),
+           "published_at": article.get("published_at") or article.get("scraped_at") or article.get("date"),
            "source": article.get("source") or "", "title_en": article.get("title_en") or article.get("title") or "",
            "event": item.get("event") or article.get("title_en") or article.get("title") or "",
            "thesis_id": tid, "thesis_strength": strength, "thesis_matched": 1 if (tid and matched) else 0,
@@ -340,6 +340,13 @@ def main(argv=None):
     run_date = run_date_jst()
 
     arts = dedup(load_articles(Path(args.raw)))
+    # Stale articles never reach the model: no tokens, no row. The archive
+    # holds three days of scrapes plus republished pieces dated months back.
+    max_age = int(rubric.get("max_age_days", 2))
+    fresh = [a for a in arts if is_fresh(a.get("published_at") or a.get("scraped_at") or a.get("date"), run_date, max_age)]
+    if len(fresh) != len(arts):
+        log("freshness: skipped %d articles published more than %d days before %s" % (len(arts) - len(fresh), max_age, run_date))
+    arts = fresh
     if args.limit:
         arts = arts[:args.limit]
     conn = connect(Path(args.db))
