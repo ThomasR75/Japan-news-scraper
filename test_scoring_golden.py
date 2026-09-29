@@ -54,11 +54,15 @@ def main():
         exp_axis = g["corrected_score"] - bonus[str(int(g.get("corrected_strength", 0)))]
         got_axis = r["score"] - bonus[str(int(r["thesis_strength"]))]
         t = g["title_en"][:50]
-        if g["corrected_score"] >= TOP and r["score"] < 5.0:
-            bad.append("%s: a top (%.1f) fell to %.1f" % (t, g["corrected_score"], r["score"]))
-        elif g["corrected_score"] <= ZERO and r["score"] > 3.0:
-            bad.append("%s: a zero (%.1f) rose to %.1f" % (t, g["corrected_score"], r["score"]))
-        elif ZERO < g["corrected_score"] < TOP and abs(got_axis - exp_axis) > MID_TOL:
+        # Tiers are classified and checked on the AXIS score. The thesis bonus
+        # is the context-sensitive layer (see below); an article that was a
+        # "top" only because a related link lifted 6.0 to 7.5 is a mid on
+        # coverage, and that is the number this test is about.
+        if exp_axis >= TOP and got_axis < 5.0:
+            bad.append("%s: a top (axis %.1f) fell to %.1f" % (t, exp_axis, got_axis))
+        elif exp_axis <= ZERO and got_axis > 3.0:
+            bad.append("%s: a zero (axis %.1f) rose to %.1f" % (t, exp_axis, got_axis))
+        elif ZERO < exp_axis < TOP and abs(got_axis - exp_axis) > MID_TOL:
             bad.append("%s: axis %.1f vs expected %.1f (±%.1f)" % (t, got_axis, exp_axis, MID_TOL))
         # Only DIRECT links are pinned. Measured on M3, 2026-09-29: two
         # strength-2 ("related") links appeared when the articles were proposed
