@@ -78,6 +78,39 @@ def t_short_ascii_keywords_match_whole_words_only():
     print("  ✓ 'euro' no longer matches 'European'; Japanese keywords still substring-match")
 
 
+def t_stem_keywords_still_match():
+    """Review finding: whole-word matching on both sides silently killed the
+    ledger's stem keywords — 'e-invoic' (eu-einvoice) and 'fsa licen'
+    (finatext-4419) could no longer match anything. Rule now: a leading
+    boundary always; a trailing boundary only for short keywords (<= 4),
+    which is where 'euro' -> 'European' lived."""
+    th = [{"id": "einv", "keywords": ["e-invoic", "einvoic"], "pseudo": False},
+          {"id": "fin", "keywords": ["fsa licen"], "pseudo": False},
+          {"id": "ecb", "keywords": ["euro"], "pseudo": False}]
+    assert candidates({"translated_text": "mandatory e-invoicing from 2028"}, th) == ["einv"]
+    assert candidates({"translated_text": "an FSA licensed platform"}, th) == ["fin"]
+    assert candidates({"translated_text": "European workers"}, th) == []
+    assert candidates({"translated_text": "the euro rose"}, th) == ["ecb"]
+    print("  ✓ stem keywords prefix-match; short keywords still need a whole word")
+
+
+def t_every_real_ledger_keyword_can_still_match_something():
+    """The contract the spec asked for: a keyword that can never match is a
+    silent linkage failure. Each ASCII keyword must match itself in context."""
+    dead = []
+    for t in load_theses():
+        for k in t["keywords"]:
+            if not k.isascii():
+                continue
+            # Short keywords are whole-word by rule; longer ones are stems and
+            # must match when embedded in a longer word ('e-invoic' -> 'e-invoicing').
+            probe = "x %s y" % k if len(k) <= 4 else "x %sing y" % k
+            if candidates({"translated_text": probe}, [dict(t, pseudo=False)]) != [t["id"]]:
+                dead.append("%s:%s" % (t["id"], k))
+    assert not dead, "keywords that can never match: %s" % dead
+    print("  ✓ every ASCII keyword in the real ledger can still match")
+
+
 def t_clamp():
     assert clamp_strength(3, matched=True) == 3
     assert clamp_strength(3, matched=False) == 1
@@ -94,7 +127,8 @@ if __name__ == "__main__":
                t_pseudo_theses_are_appended_and_flagged, t_hash_is_order_independent,
                t_candidates_match_japanese_and_english,
                t_paraphrased_translation_still_matches_via_japanese,
-               t_short_ascii_keywords_match_whole_words_only, t_clamp):
+               t_short_ascii_keywords_match_whole_words_only,
+               t_stem_keywords_still_match, t_every_real_ledger_keyword_can_still_match_something, t_clamp):
         try:
             fn()
         except Exception as e:

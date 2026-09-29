@@ -52,11 +52,6 @@ run_scraper "nikkei_scraper.py"       python3 "$NIKKEI_DIR/nikkei_scraper.py"
 # 3. MiniMax translates any article that's still JP-only.
 run_strict  "translate_minimax.py"    python3 translate_minimax.py
 
-# 3b. Relevance scoring → carry.db news_scores. Non-fatal: the two existing
-#     digests must ship even if scoring fails. Exits 1 on ZERO scored.
-run_scraper "score_articles.py"       python3 score_articles.py
-run_scraper "generate_ranked_html.py" python3 generate_ranked_html.py --date "$DATE_JST"
-
 # 4-5. Render the two digests (non-Nikkei + Nikkei).
 run_strict  "generate_html non-nikkei" python3 generate_html.py --exclude-nikkei
 run_strict  "generate_html nikkei"     python3 generate_html.py --nikkei-only
@@ -75,7 +70,13 @@ fi
 # 6. Telegram delivery — send_digests.sh is in ~/bin/ (survived the rm).
 run_strict  "send_digests.sh" /home/blablom/bin/send_digests.sh "$DATE_JST"
 
-# 6b. Ranked top-50 document + top-5 events message. Non-fatal.
+# 6b. Relevance scoring → ranked top-50 document + top-5 events message.
+#     Deliberately AFTER send_digests.sh: the two existing digests are already
+#     out before any of this starts, so a stalled scoring endpoint can never
+#     cost them. All three non-fatal; score_articles.py exits 1 on ZERO scored
+#     and stops starting batches after --deadline-min (default 60).
+run_scraper "score_articles.py"       python3 score_articles.py
+run_scraper "generate_ranked_html.py" python3 generate_ranked_html.py --date "$DATE_JST"
 run_scraper "publish_ranked.py"       python3 publish_ranked.py --date "$DATE_JST"
 
 # Post-run cleanup: prune raw article archives older than 3 days.

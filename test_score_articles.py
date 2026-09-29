@@ -186,6 +186,53 @@ def t_store_is_idempotent_per_rubric_version():
     print("  ✓ already_scored keys on rubric_version; store does not duplicate")
 
 
+def t_rescoring_keeps_the_original_run_date():
+    """Review finding: a rubric bump re-scored the whole 3-day archive INTO
+    today's run_date (INSERT OR REPLACE), pulling articles out of the digest
+    that first carried them. Spec §4: run_date is the run that FIRST scored it."""
+    conn = tmpdb()
+    a = art(1)
+    old = sa.make_row(a, item(a["url"], axes={**{x: 0 for x in AXES}, "rates": 5}), R, False, "2026-09-27", "h")
+    sa.store(conn, [old])
+    new = sa.make_row(a, item(a["url"], axes={**{x: 0 for x in AXES}, "rates": 8}), R, False, "2026-09-29", "h2")
+    new["rubric_version"] = "later"
+    sa.store(conn, [new])
+    row = conn.execute("SELECT run_date, score, rubric_version FROM news_scores WHERE url=?", (a["url"],)).fetchone()
+    assert row == ("2026-09-27", 8.0, "later"), row
+    print("  ✓ a re-score updates the score and version but keeps the first run_date")
+
+
+def t_zero_scored_with_work_to_do_exits_one():
+    """Review finding: `if not rows and not done` was dead in steady state —
+    with yesterday's articles already scored, an M3 outage that failed every
+    batch logged 'stored 0 rows' and exited 0: no digest, no OnFailure."""
+    raw = Path(tempfile.mkdtemp()); (raw / "S").mkdir()
+    (raw / "S" / "a.json").write_text(json.dumps(art(1)), encoding="utf-8")
+    db = Path(tempfile.mkdtemp()) / "t.db"
+    real = sa.call_model
+    sa.call_model = lambda prompt, rubric=None: "garbage"      # every call fails, no API
+    try:
+        rc = sa.main(["--raw", str(raw), "--db", str(db)])
+    finally:
+        sa.call_model = real
+    assert rc == 1, rc
+    print("  ✓ work to do and nothing scored exits 1, even with older rows in the table")
+
+
+def t_deadline_stops_further_batches():
+    """Review finding: a stalled endpoint could run the scorer for hours,
+    past the unit's 3 h ceiling, and take the two existing digests with it."""
+    batch_calls = {"n": 0}
+    def slow(prompt):
+        batch_calls["n"] += 1
+        urls = [l.split("URL: ", 1)[1].strip() for l in prompt.splitlines() if l.startswith("URL: ")]
+        return json.dumps({"articles": [item(u) for u in urls]})
+    arts_ = [art(i) for i in range(25)]                          # 3 batches
+    got = sa.score_all(arts_, {}, TH_BY_ID, R, call=slow, deadline=dt.datetime.now(dt.timezone.utc))
+    assert batch_calls["n"] == 1 and len(got) == 10, (batch_calls["n"], len(got))
+    print("  ✓ an expired deadline stops after the batch in flight; what was scored is kept")
+
+
 def t_connect_uses_wal():
     conn = tmpdb()
     assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "wal"
@@ -211,7 +258,10 @@ if __name__ == "__main__":
                t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
                t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
                t_scoring_model_comes_from_the_rubric_not_the_translator,
-               t_store_is_idempotent_per_rubric_version, t_connect_uses_wal, t_main_refuses_zero_scored):
+               t_store_is_idempotent_per_rubric_version,
+               t_rescoring_keeps_the_original_run_date, t_zero_scored_with_work_to_do_exits_one,
+               t_deadline_stops_further_batches,
+               t_connect_uses_wal, t_main_refuses_zero_scored):
         try:
             fn()
         except Exception as e:

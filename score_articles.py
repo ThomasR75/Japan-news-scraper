@@ -219,7 +219,11 @@ def parse_scores(text, expected_urls):
         raise ValueError("model omitted %d of %d URLs" % (len(missing), len(expected_urls)))
     return {u: got[u] for u in expected_urls}
 
-def score_batch(batch, cand_by_url, theses_by_id, rubric, call=call_model):
+def score_batch(batch, cand_by_url, theses_by_id, rubric, call=None):
+    # `call` resolves at call time, not definition time, so a test that
+    # patches score_articles.call_model is actually honoured — a default of
+    # `call=call_model` bound the original and let one test hit the real API.
+    call = call or call_model
     urls = [a["url"] for a in CALIBRATION] + [a["url"] for a in batch]
     prompt = build_prompt(batch, cand_by_url, theses_by_id, rubric)
     for attempt in (1, 2):
@@ -236,6 +240,24 @@ def score_batch(batch, cand_by_url, theses_by_id, rubric, call=call_model):
     out = []
     for a in batch:                                   # split into singles
         out.extend(score_batch([a], cand_by_url, theses_by_id, rubric, call=call))
+    return out
+
+def score_all(todo, cand_by_url, theses_by_id, rubric, call=None, deadline=None):
+    """Every batch, in order, until done or the deadline passes.
+
+    The deadline is checked between batches, never mid-call, so the batch in
+    flight always completes. A stalled endpoint could otherwise run this for
+    hours — past the unit's 3 h ceiling, taking the two existing digests with
+    it (review finding, 2026-09-29). What was scored before the cut-off is
+    kept; the log says how far it got.
+    """
+    out = []
+    for i in range(0, len(todo), BATCH):
+        if deadline is not None and i > 0 and datetime.now(timezone.utc) >= deadline:
+            log("deadline reached after %d/%d — storing what was scored" % (i, len(todo)))
+            break
+        out.extend(score_batch(todo[i:i + BATCH], cand_by_url, theses_by_id, rubric, call=call))
+        log("scored %d/%d" % (min(i + BATCH, len(todo)), len(todo)))
     return out
 
 # ---- rows -------------------------------------------------------------------
@@ -288,7 +310,12 @@ COLS = ["url", "run_date", "published_at", "source", "title_en", "event",
         "score", "reason", "rubric_version", "theses_hash", "scored_at_utc"]
 
 def store(conn, rows):
-    sql = "INSERT OR REPLACE INTO news_scores (%s) VALUES (%s)" % (",".join(COLS), ",".join("?" * len(COLS)))
+    # A re-score (new rubric version) updates everything EXCEPT run_date: the
+    # digest an article belongs to is the run that first scored it (spec §4).
+    # INSERT OR REPLACE would have pulled the whole 3-day archive into today.
+    upd = ", ".join("%s=excluded.%s" % (c, c) for c in COLS if c not in ("url", "run_date"))
+    sql = ("INSERT INTO news_scores (%s) VALUES (%s) ON CONFLICT(url) DO UPDATE SET %s"
+           % (",".join(COLS), ",".join("?" * len(COLS)), upd))
     conn.executemany(sql, [[r.get(c) for c in COLS] for r in rows])
     conn.commit()
     return len(rows)
@@ -301,6 +328,8 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, default=0, help="only the first N articles")
     ap.add_argument("--db", default=str(DB_PATH))
     ap.add_argument("--raw", default=str(RAW_DIR))
+    ap.add_argument("--deadline-min", type=int, default=60,
+                    help="stop starting new batches after this many minutes (default 60)")
     args = ap.parse_args(argv)
 
     rubric = load_rubric()
@@ -320,16 +349,19 @@ def main(argv=None):
         % (len(arts), len(done), rubric["version"], len(todo)))
 
     cand_by_url = {a["url"]: candidates(a, theses) for a in todo}
+    deadline = datetime.now(timezone.utc) + timedelta(minutes=args.deadline_min)
+    items = score_all(todo, cand_by_url, theses_by_id, rubric, deadline=deadline)
     rows = []
-    for i in range(0, len(todo), BATCH):
-        batch = todo[i:i + BATCH]
-        for it in score_batch(batch, cand_by_url, theses_by_id, rubric):
-            a = next(x for x in batch if x["url"] == it["url"])
-            matched = bool(it["thesis"].get("id")) and it["thesis"]["id"] in cand_by_url.get(a["url"], [])
-            rows.append(make_row(a, it, rubric, matched, run_date, thash))
-        log("scored %d/%d" % (min(i + BATCH, len(todo)), len(todo)))
+    for it in items:
+        a = next(x for x in todo if x["url"] == it["url"])
+        matched = bool(it["thesis"].get("id")) and it["thesis"]["id"] in cand_by_url.get(a["url"], [])
+        rows.append(make_row(a, it, rubric, matched, run_date, thash))
 
-    if not rows and not done:
+    # Work to do and nothing scored is a failure, whatever older rows exist.
+    # `not done` alone was dead in steady state: with yesterday's articles
+    # already in the table, an outage that failed every batch exited 0 with
+    # "stored 0 rows" — no digest, no OnFailure (review finding, 2026-09-29).
+    if not rows and (todo or not done):
         log("ZERO articles scored — refusing to report a quiet day")
         return 1
     if args.dry_run:

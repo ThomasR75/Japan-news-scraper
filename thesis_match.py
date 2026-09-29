@@ -51,7 +51,13 @@ def _keyword_hits(k, hay):
     """
     k = k.lower()
     if k.isascii():
-        return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", hay) is not None
+        # Leading boundary always. A trailing boundary only for short keywords:
+        # 'euro' must not match 'European', but the ledger writes longer
+        # keywords as stems ('e-invoic', 'fsa licen') that must match
+        # 'e-invoicing' and 'FSA licensed'. Whole-word on both sides silently
+        # killed those (review finding, 2026-09-29).
+        tail = r"(?![a-z0-9])" if len(k) <= 4 else ""
+        return re.search(r"(?<![a-z0-9])" + re.escape(k) + tail, hay) is not None
     return k in hay
 
 def candidates(article, theses):
