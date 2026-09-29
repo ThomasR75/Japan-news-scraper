@@ -134,7 +134,7 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 - Nikkei cookies: `~/.config/openclaw/nikkei_cookies.json`
 - Relevance scoring: `score_articles.py` (rubric `rubric.json`, maths `scoring_rubric.py`, ledger link `thesis_match.py`) → `apps/carry-dash/server/carry.db:news_scores`
 - Ranked outputs: `generate_ranked_html.py` → `data/reports/daily_ranked_DATE.html`; `publish_ranked.py` → Telegram
-- Golden set: `golden/golden_set.json` (`test_scoring_golden.py` — asserts tiers, not points; MiniMax-M2.5 moves mid-tier articles ±2–3 between runs)
+- Golden set: `golden/golden_set.json` (`test_scoring_golden.py` — asserts tiers on the axis score plus direct thesis links; the model is MiniMax-M3 per `rubric.json:model`, chosen on measured run-to-run drift of 0.60 vs M2.5's 1.00; related links are batch-context-sensitive and deliberately not pinned)
 
 ## Deprecated — do not revive
 
