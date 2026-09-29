@@ -32,6 +32,42 @@ BATCH = 10
 BODY_CHARS = 1200
 RETRY_WAIT = 5
 
+# Two fixed reference articles scored with EVERY batch and discarded. Found
+# on the first golden run: identical articles re-scored minutes apart moved
+# 7 of 15 out of band (a farm takeover went 3.0 -> 8.0) because the model's
+# scale floated from call to call. A constant 10 and a constant 0 in each
+# batch pin the frame the real articles are scored against.
+CALIBRATION = [
+    {"url": "calibration://rates-10", "source": "calibration",
+     "title_en": "Bank of Japan raises policy rate 25bp to 1.25%, signals further hikes",
+     "translated_text": "The Bank of Japan raised its short-term policy rate by 25 basis points to 1.25% "
+                        "and said it will keep raising if inflation stays on track. JGB yields rose across "
+                        "the curve and the yen strengthened."},
+    {"url": "calibration://zero", "source": "calibration",
+     "title_en": "Local festival draws record crowds under clear skies",
+     "translated_text": "A regional summer festival drew its largest crowd in a decade. Organisers thanked "
+                        "volunteers; police reported no incidents."},
+]
+CALIBRATION_URLS = {a["url"] for a in CALIBRATION}
+
+# Concrete anchors per axis, so a "7" means the same thing in every call.
+SCALE = [
+    "SCALE (absolute; score each article on its own against these examples — do NOT spread",
+    "scores across the batch or grade on a curve):",
+    "  10 = a central bank changes its policy rate or guidance; a sovereign-debt shock",
+    "   8 = a CB board member shifts expectations; a major CPI/payroll surprise; a G7 fiscal package",
+    "   6 = a notable data print or official comment that moves a market a little",
+    "   4 = sector or mid-cap company news with a macro angle; a regulatory proposal",
+    "   2 = a single company's routine result; a local economic story",
+    "   0 = crime, weather, sport, culture, human interest",
+    "  corporate: 10 = mega-M&A or accounting fraud at a major listed company; 6 = a large-cap",
+    "   strategic move; 3 = a mid-cap acquisition; 1 = a regional firm's news",
+    "  commodities: 10 = supply shock or cartel decision moving a benchmark; 5 = a contract/tariff",
+    "   story with price read-through; 1 = a local harvest note",
+    "  credit: 10 = a systemic funding stress or a $10B+ issuance/financing structure;",
+    "   6 = a large-cap bond raise or private-credit deal; 2 = a routine refinancing",
+]
+
 def log(m):
     print("[" + datetime.now(JST).strftime("%H:%M:%S") + " JST] " + m, flush=True)
 
@@ -85,8 +121,12 @@ def build_prompt(batch, cand_by_url, theses_by_id, rubric):
         "THESIS STRENGTH (only for a candidate id listed under the article; null otherwise):",
         str_txt,
         "",
+        *SCALE,
+        "",
+        "The first two articles are fixed calibration examples: score them too, on the same scale.",
+        "",
     ]
-    for a in batch:
+    for a in [*CALIBRATION, *batch]:
         cands = cand_by_url.get(a["url"], [])
         lines.append("=== ARTICLE ===")
         lines.append("URL: " + a["url"])
@@ -105,9 +145,11 @@ def build_prompt(batch, cand_by_url, theses_by_id, rubric):
 
 # ---- model ------------------------------------------------------------------
 
+TEMPERATURE = 0.2
+
 def call_model(prompt):
     endpoint, key = get_endpoint_and_key()
-    payload = {"model": MODEL, "max_tokens": 4096, "temperature": 0.2,
+    payload = {"model": MODEL, "max_tokens": 4096, "temperature": TEMPERATURE,
                "messages": [{"role": "user", "content": prompt}]}
     req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"),
                                  headers={"Content-Type": "application/json", "x-api-key": key,
@@ -160,11 +202,12 @@ def parse_scores(text, expected_urls):
     return {u: got[u] for u in expected_urls}
 
 def score_batch(batch, cand_by_url, theses_by_id, rubric, call=call_model):
-    urls = [a["url"] for a in batch]
+    urls = [a["url"] for a in CALIBRATION] + [a["url"] for a in batch]
     prompt = build_prompt(batch, cand_by_url, theses_by_id, rubric)
     for attempt in (1, 2):
         try:
-            return list(parse_scores(call(prompt), urls).values())
+            got = parse_scores(call(prompt), urls)
+            return [it for u, it in got.items() if u not in CALIBRATION_URLS]
         except Exception as e:
             log("  batch of %d failed (attempt %d): %s" % (len(batch), attempt, type(e).__name__))
             if attempt == 1:

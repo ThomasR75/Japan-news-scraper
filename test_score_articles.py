@@ -35,7 +35,9 @@ def item(url, **kw):
 def fake_call(items_by_url, missing=(), extra=()):
     def _c(prompt):
         urls = [l.split("URL: ", 1)[1].strip() for l in prompt.splitlines() if l.startswith("URL: ")]
-        out = [items_by_url[u] for u in urls if u not in missing]
+        # Unknown URLs (the two calibration anchors) get a default item, as a
+        # real model would score them too.
+        out = [items_by_url.get(u) or item(u) for u in urls if u not in missing]
         out += [item(u) for u in extra]
         return json.dumps({"articles": out})
     return _c
@@ -132,6 +134,28 @@ def t_one_bad_single_costs_one_article():
     print("  ✓ a single that still fails is dropped and named; the rest survive")
 
 
+def t_prompt_carries_absolute_anchors():
+    """Found on the first golden run: identical articles re-scored minutes
+    later moved 7 of 15 out of band (a farm takeover went 3.0 -> 8.0). The
+    scale floated because the prompt had no concrete anchors."""
+    p = sa.build_prompt([art(1)], {}, TH_BY_ID, R)
+    assert "SCALE" in p and "10 =" in p and "0 =" in p, "anchor scale missing"
+    assert "score each article on its own" in p.lower()
+    for a in sa.CALIBRATION:
+        assert "URL: " + a["url"] in p, "calibration article %s not in prompt" % a["url"]
+    print("  ✓ the prompt carries an absolute scale and the two calibration articles")
+
+
+def t_calibration_anchors_are_stripped_from_results():
+    batch = [art(1), art(2)]
+    items = {a["url"]: item(a["url"]) for a in batch}
+    for a in sa.CALIBRATION:
+        items[a["url"]] = item(a["url"])
+    got = sa.score_batch(batch, {}, TH_BY_ID, R, call=fake_call(items))
+    assert sorted(g["url"] for g in got) == ["https://x/1", "https://x/2"], [g["url"] for g in got]
+    print("  ✓ calibration articles are scored with the batch and never returned")
+
+
 def t_store_is_idempotent_per_rubric_version():
     conn = tmpdb()
     a = art(1)
@@ -168,6 +192,7 @@ if __name__ == "__main__":
                t_parse_rejects_missing_url_and_ignores_extras, t_axis_values_are_clamped_or_rejected,
                t_missing_event_falls_back_to_title, t_unmatched_thesis_is_clamped_and_flagged,
                t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
+               t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
                t_store_is_idempotent_per_rubric_version, t_connect_uses_wal, t_main_refuses_zero_scored):
         try:
             fn()
