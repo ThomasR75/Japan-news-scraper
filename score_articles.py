@@ -146,6 +146,9 @@ def build_prompt(batch, cand_by_url, theses_by_id, rubric):
 # ---- model ------------------------------------------------------------------
 
 TEMPERATURE = 0.2
+# M2.5 answers a batch of 12 in ~25 s. Slower models (M2.7, M3 reason before
+# answering) can take several minutes; 90 s made them look broken.
+CALL_TIMEOUT = 90
 
 def call_model(prompt):
     endpoint, key = get_endpoint_and_key()
@@ -154,7 +157,7 @@ def call_model(prompt):
     req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"),
                                  headers={"Content-Type": "application/json", "x-api-key": key,
                                           "anthropic-version": "2023-06-01"})
-    with urllib.request.urlopen(req, timeout=90) as resp:
+    with urllib.request.urlopen(req, timeout=CALL_TIMEOUT) as resp:
         result = json.loads(resp.read().decode("utf-8"))
     blocks = result.get("content", [])
     return "".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
