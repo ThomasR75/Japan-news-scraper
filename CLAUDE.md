@@ -73,9 +73,11 @@ grep -c 'class="article"' digests/nikkei_daily_$(TZ=Asia/Tokyo date +%Y-%m-%d).h
 1. `scraper_non_nikkei.py` — 18+ non-Nikkei sources (requests / RSS). Sources: 3 Asahi, 3 Mainichi, 3 Sankei, 3 FNN, 3 NHK (all via requests/RSS), plus 5 Yomiuri. Retries once on failure, then continues.
 2. `../nikkei_scraper/nikkei_scraper.py` — 6 Nikkei sections (requests + paid-subscription cookies). Retries once, then continues.
 3. `translate_minimax.py` — MiniMax translates anything with `extracted_text` missing `translated_text`, or `title` missing `title_en`. Imports `minimax_translate.py`. Failure aborts the pipeline. **Parallel since 2026-09-29:** a `ThreadPoolExecutor` with `WORKERS=4` (override `TRANSLATE_WORKERS=N`; `1` restores the old sequential loop). Each article is ~20 s of waiting on the API, so 292 articles went from ~97 min to ~25. Why: the day the Nikkei cookies were fixed (2026-09-28) the workload tripled and systemd killed the run at its 60-min `TimeoutStartSec` with nothing delivered — the loop had only ever been fast because Nikkei was empty. `TimeoutStartSec` on the unit is now `10800` (3 h) as a ceiling, not a target. The script has a `main()` guard; `test_translate_parallel.py` asserts the pool is actually parallel (timing), that per-file atomic writes survive concurrency, and that one give-up costs one article.
+3b. `score_articles.py` — relevance scoring (six axes + thesis link) → `news_scores` in `apps/carry-dash/server/carry.db`. Non-fatal. Exits 1 on zero scored. Then `generate_ranked_html.py` → `data/reports/daily_ranked_DATE.html` (top 50). Rubric: `rubric.json`. Spec: `docs/specs/2026-09-28-news-relevance-scoring-design.md`.
 4. `python3 generate_html.py --exclude-nikkei` → `data/reports/daily_digest_non-nikkei_DATE.html`
 5. `python3 generate_html.py --nikkei-only` → `data/reports/daily_digest_nikkei_DATE.html`, then copied to `digests/nikkei_daily_DATE.html`.
 6. `/home/blablom/bin/send_digests.sh DATE` — Telegram delivery to chat `8004116253`.
+6b. `publish_ranked.py DATE` — Telegram: the top-50 document + one top-5-events message. Non-fatal.
 7. `cleanup_archive.py` — deletes article JSON files older than 3 days (default) from `data/news_archive/raw/`, removes empty source directories.
 
 Logs: `logs/pipeline_YYYY-MM-DD.log`.
@@ -130,6 +132,9 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 - Output digests: `data/reports/daily_digest_{nikkei,non-nikkei}_DATE.html` + `digests/nikkei_daily_DATE.html`
 - Logs: `logs/pipeline_DATE.log`
 - Nikkei cookies: `~/.config/openclaw/nikkei_cookies.json`
+- Relevance scoring: `score_articles.py` (rubric `rubric.json`, maths `scoring_rubric.py`, ledger link `thesis_match.py`) → `apps/carry-dash/server/carry.db:news_scores`
+- Ranked outputs: `generate_ranked_html.py` → `data/reports/daily_ranked_DATE.html`; `publish_ranked.py` → Telegram
+- Golden set: `golden/golden_set.json` (`test_scoring_golden.py` — asserts tiers, not points; MiniMax-M2.5 moves mid-tier articles ±2–3 between runs)
 
 ## Deprecated — do not revive
 
