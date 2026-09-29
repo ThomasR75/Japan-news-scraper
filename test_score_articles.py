@@ -156,6 +156,23 @@ def t_calibration_anchors_are_stripped_from_results():
     print("  ✓ calibration articles are scored with the batch and never returned")
 
 
+def t_scoring_model_comes_from_the_rubric_not_the_translator():
+    """The scorer used to inherit the translate step's MODEL pin. Measured
+    2026-09-29: M3 re-scores the same articles with ~half M2.5's drift, so the
+    two steps need different models, and the choice belongs with the other
+    tunables in rubric.json (SCORING_MODEL in the environment overrides it)."""
+    assert R.get("model") == "MiniMax-M3", R.get("model")
+    p = sa.build_payload("hi", R)
+    assert p["model"] == "MiniMax-M3" and p["messages"][0]["content"] == "hi"
+    assert p["temperature"] == sa.TEMPERATURE
+    os.environ["SCORING_MODEL"] = "MiniMax-Test"
+    try:
+        assert sa.build_payload("hi", R)["model"] == "MiniMax-Test"
+    finally:
+        del os.environ["SCORING_MODEL"]
+    print("  ✓ the scoring model is rubric.json's, overridable by SCORING_MODEL, independent of translation")
+
+
 def t_store_is_idempotent_per_rubric_version():
     conn = tmpdb()
     a = art(1)
@@ -193,6 +210,7 @@ if __name__ == "__main__":
                t_missing_event_falls_back_to_title, t_unmatched_thesis_is_clamped_and_flagged,
                t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
                t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
+               t_scoring_model_comes_from_the_rubric_not_the_translator,
                t_store_is_idempotent_per_rubric_version, t_connect_uses_wal, t_main_refuses_zero_scored):
         try:
             fn()

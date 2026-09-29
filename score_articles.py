@@ -150,10 +150,25 @@ TEMPERATURE = 0.2
 # answering) can take several minutes; 90 s made them look broken.
 CALL_TIMEOUT = 90
 
-def call_model(prompt):
+def scoring_model(rubric):
+    """rubric.json's model, overridable by SCORING_MODEL; the translate step's
+    pin is only the last resort. Measured 2026-09-29 on the same 15 articles:
+    M3 re-scores with ~half M2.5's run-to-run drift (0.60 vs 1.00 mean axis
+    drift, 1 vs 3 outliers) and faster, so scoring and translation now differ."""
+    return os.environ.get("SCORING_MODEL") or rubric.get("model") or MODEL
+
+def build_payload(prompt, rubric):
+    return {"model": scoring_model(rubric), "max_tokens": 4096, "temperature": TEMPERATURE,
+            "messages": [{"role": "user", "content": prompt}]}
+
+_RUBRIC = None
+def call_model(prompt, rubric=None):
+    global _RUBRIC
+    if rubric is None:
+        _RUBRIC = _RUBRIC or load_rubric()
+        rubric = _RUBRIC
     endpoint, key = get_endpoint_and_key()
-    payload = {"model": MODEL, "max_tokens": 4096, "temperature": TEMPERATURE,
-               "messages": [{"role": "user", "content": prompt}]}
+    payload = build_payload(prompt, rubric)
     req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"),
                                  headers={"Content-Type": "application/json", "x-api-key": key,
                                           "anthropic-version": "2023-06-01"})
