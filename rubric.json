@@ -1,0 +1,33 @@
+{
+  "version": "2026-09-29.1",
+  "axes": ["rates", "macro", "commodities", "credit", "politics", "corporate"],
+  "axis_guidance": {
+    "rates": "central bank policy, STIR, sovereign yields, JGBs",
+    "macro": "growth, inflation, FX, capital flows, fiscal",
+    "commodities": "wheat, sugar, coffee, cocoa, natgas, cattle, copper, oil, soy, iron, aluminium; energy and shipping",
+    "credit": "issuance, spreads, financing structure; hyperscaler/AI capex funding lands here",
+    "politics": "only insofar as it moves policy or fiscal outcomes",
+    "corporate": "single names, M&A, earnings"
+  },
+  "bonus": {"0": 0.0, "1": 0.5, "2": 1.5, "3": 2.5},
+  "strength_guidance": {
+    "1": "weak: same sector, no read-through to the position",
+    "2": "related: moves a driver of the thesis",
+    "3": "direct: moves the thesis itself"
+  },
+  "publish_threshold": 6.0,
+  "top_n_html": 50,
+  "top_n_telegram": 5,
+  "event_jaccard": 0.6,
+  "pseudo_theses": [
+    {
+      "id": "hyperscaler-financing",
+      "title": "How AI/datacentre capex is funded",
+      "keywords": ["datacenter", "data center", "data centre", "データセンター", "hyperscaler",
+                   "capex", "設備投資", "bond issuance", "社債", "private credit",
+                   "sale-leaseback", "spv", "vendor financing", "microsoft", "oracle",
+                   "amazon web services", "aws", "google cloud", "meta platforms",
+                   "coreweave", "nvidia", "gpu"]
+    }
+  ]
+}
