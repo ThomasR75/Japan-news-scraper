@@ -146,6 +146,29 @@ def t_prompt_carries_absolute_anchors():
     print("  ✓ the prompt carries an absolute scale and the two calibration articles")
 
 
+def t_candidate_thesis_is_a_required_judgement():
+    """Golden runs against Thomas's corrections: a keyword-matched DIRECT link
+    (Doomsday Radio -> russia-nato-tail/3) came back as null on one run in
+    two. The prompt allowed null whenever the model felt unsure. With a
+    candidate listed it must now return that id with a strength — 0 allowed —
+    so 'unrelated' is a decision, not an omission. No candidates: null stays."""
+    a = art(1)
+    with_c = sa.build_prompt([a], {a["url"]: ["jgb"]}, TH_BY_ID, R)
+    without = sa.build_prompt([a], {}, TH_BY_ID, R)
+    sec = with_c.split("=== ARTICLE ===")[-1]             # the real article, after the calibration pair
+    assert "strength 0 if unrelated" in sec.lower(), sec
+    assert "candidate theses: none" in without.split("=== ARTICLE ===")[-1].lower()
+    print("  ✓ with a candidate listed, the prompt demands a strength; without one, null is fine")
+
+
+def t_strength_zero_means_no_link():
+    a = art(1)
+    row = sa.make_row(a, item(a["url"], thesis={"id": "jgb", "strength": 0}, axes={**{x: 0 for x in AXES}, "macro": 6}),
+                      R, matched=True, run_date="2026-09-29", thash="h")
+    assert row["thesis_id"] is None and row["thesis_strength"] == 0 and row["thesis_matched"] == 0 and row["score"] == 6.0
+    print("  ✓ an explicit strength 0 stores no link, not a link worth nothing")
+
+
 def t_calibration_anchors_are_stripped_from_results():
     batch = [art(1), art(2)]
     items = {a["url"]: item(a["url"]) for a in batch}
@@ -286,6 +309,7 @@ if __name__ == "__main__":
                t_missing_event_falls_back_to_title, t_unmatched_thesis_is_clamped_and_flagged,
                t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
                t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
+               t_candidate_thesis_is_a_required_judgement, t_strength_zero_means_no_link,
                t_scoring_model_comes_from_the_rubric_not_the_translator,
                t_store_is_idempotent_per_rubric_version,
                t_rescoring_keeps_the_original_run_date, t_zero_scored_with_work_to_do_exits_one,

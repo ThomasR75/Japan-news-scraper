@@ -138,8 +138,14 @@ def build_prompt(batch, cand_by_url, theses_by_id, rubric):
             for cid in cands:
                 t = theses_by_id.get(cid, {})
                 lines.append("  - %s: %s" % (cid, t.get("title", cid)))
+            # A listed candidate is a REQUIRED judgement: return the id with a
+            # strength, 0 if unrelated. Allowing null here let a keyword-matched
+            # direct link come back empty on one run in two (golden, 2026-09-29):
+            # an explicit 0 is a decision, an omission was a shrug.
+            lines.append("  You MUST return one of these ids as thesis.id with a strength 0-3 — "
+                         "strength 0 if unrelated. Do not return null here.")
         else:
-            lines.append("CANDIDATE THESES: none")
+            lines.append("CANDIDATE THESES: none (thesis.id must be null)")
         lines.append("")
     return "\n".join(lines)
 
@@ -266,6 +272,8 @@ def make_row(article, item, rubric, matched, run_date, thash):
     axes = item["axes"]
     tid = item["thesis"].get("id") or None
     strength = clamp_strength(item["thesis"].get("strength", 0), matched) if tid else 0
+    if strength == 0:
+        tid = None          # an explicit "unrelated" is no link, not a link worth nothing
     row = {"url": article["url"], "run_date": run_date,
            "published_at": article.get("published_at") or article.get("scraped_at") or article.get("date"),
            "source": article.get("source") or "", "title_en": article.get("title_en") or article.get("title") or "",
