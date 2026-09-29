@@ -8,7 +8,7 @@ the ledger is missing. Matching runs on the Japanese original as well as the
 English translation: the ledger's keywords are English and MiniMax may render
 GPIF as "Government Pension Investment Fund".
 """
-import hashlib, json, os
+import hashlib, json, os, re
 from pathlib import Path
 
 THESES_PATH = Path(os.path.expanduser("~/.openclaw/workspace/thesis_ledger/theses.json"))
@@ -42,11 +42,23 @@ def theses_hash(theses):
 def _haystack(article):
     return " ".join((article.get(f) or "") for f in TEXT_FIELDS).lower()
 
+def _keyword_hits(k, hay):
+    """Whole-word match for ASCII keywords, substring for everything else.
+
+    Seen on the first live dry-run (2026-09-29): the ledger keyword 'euro'
+    matched 'European' and linked an AI-workforce piece to the ECB thesis.
+    Japanese has no word boundaries, so those keywords keep substring matching.
+    """
+    k = k.lower()
+    if k.isascii():
+        return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", hay) is not None
+    return k in hay
+
 def candidates(article, theses):
     hay = _haystack(article)
     hits = []
     for t in theses:
-        if any(k.lower() in hay for k in t["keywords"] if k):
+        if any(_keyword_hits(k, hay) for k in t["keywords"] if k):
             hits.append(t["id"])
     return hits
 

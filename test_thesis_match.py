@@ -65,6 +65,19 @@ def t_paraphrased_translation_still_matches_via_japanese():
     print("  ✓ 'Government Pension Investment Fund' still links because the JP title says GPIF")
 
 
+def t_short_ascii_keywords_match_whole_words_only():
+    """Seen on the first live dry-run: the ledger keyword 'euro' matched
+    'European' and linked an AI-workforce piece to the ECB thesis. Japanese
+    keywords have no word boundaries and keep substring matching."""
+    th = [{"id": "ecb", "keywords": ["ecb", "euro"], "pseudo": False},
+          {"id": "hyp", "keywords": ["データセンター"], "pseudo": False}]
+    assert candidates({"translated_text": "European workers power AI innovation"}, th) == []
+    assert candidates({"translated_text": "the euro fell after the ECB meeting"}, th) == ["ecb"]
+    assert candidates({"translated_text": "Eurozone inflation"}, [{"id": "e", "keywords": ["eurozone"], "pseudo": False}]) == ["e"]
+    assert candidates({"extracted_text": "大規模データセンターの建設"}, th) == ["hyp"]
+    print("  ✓ 'euro' no longer matches 'European'; Japanese keywords still substring-match")
+
+
 def t_clamp():
     assert clamp_strength(3, matched=True) == 3
     assert clamp_strength(3, matched=False) == 1
@@ -80,7 +93,8 @@ if __name__ == "__main__":
     for fn in (t_real_ledger_has_the_contract, t_unreadable_ledger_fails_loud,
                t_pseudo_theses_are_appended_and_flagged, t_hash_is_order_independent,
                t_candidates_match_japanese_and_english,
-               t_paraphrased_translation_still_matches_via_japanese, t_clamp):
+               t_paraphrased_translation_still_matches_via_japanese,
+               t_short_ascii_keywords_match_whole_words_only, t_clamp):
         try:
             fn()
         except Exception as e:
