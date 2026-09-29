@@ -268,11 +268,19 @@ why is one hover away.
   than five clear the threshold the message says so — "3 above 6.0 today" —
   rather than padding with a 3.5 traffic story. A short list is information.
 
+**Top 50.** The ranked HTML is the day's top 50 articles by score
+(`rubric.json:top_n_html`), fixed size for the same reason the Telegram
+message is: a document of constant length is one a person keeps reading.
+Every row shows its source; a second outlet on the same event sits directly
+beneath the first, marked "same story". Sent to Telegram as a document
+alongside the two existing digests.
+
 **Threshold.** `rubric.json:publish_threshold`, starting at **6.0** — the level
 at which an article is either a mid-strength read on an axis that matters or a
-weak one with a thesis link. It governs the ranked digest, the tab's default
-filter, and the Telegram top-5. Expect to tune this after a week of real
-output; it is one number in one file for exactly that reason.
+weak one with a thesis link. It governs the Telegram top-5 and the tab's
+default filter, and is shown in the HTML header as "N above 6.0". Expect to
+tune this after a week of real output; it is one number in one file for
+exactly that reason.
 
 ## 6. Failure modes
 
