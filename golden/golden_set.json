@@ -6,9 +6,9 @@
     "proposed_score": 7.5,
     "proposed_thesis": "japan-fiscal-jgb-pension",
     "proposed_strength": 2,
-    "corrected_score": 7.5,
+    "corrected_score": 9.5,
     "corrected_thesis": "japan-fiscal-jgb-pension",
-    "corrected_strength": 2,
+    "corrected_strength": 3,
     "tolerance": 1.5,
     "note": ""
   },
@@ -32,9 +32,9 @@
     "proposed_score": 6.5,
     "proposed_thesis": "us-2026-midterms",
     "proposed_strength": 1,
-    "corrected_score": 6.5,
-    "corrected_thesis": "us-2026-midterms",
-    "corrected_strength": 1,
+    "corrected_score": 7.0,
+    "corrected_thesis": "japan-fiscal-jgb-pension",
+    "corrected_strength": 2,
     "tolerance": 1.5,
     "note": ""
   },
@@ -188,9 +188,9 @@
     "proposed_score": 0.0,
     "proposed_thesis": null,
     "proposed_strength": 0,
-    "corrected_score": 0.0,
-    "corrected_thesis": null,
-    "corrected_strength": 0,
+    "corrected_score": 5.0,
+    "corrected_thesis": "japan-fiscal-jgb-pension",
+    "corrected_strength": 1,
     "tolerance": 1.5,
     "note": ""
   }
