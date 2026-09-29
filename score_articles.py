@@ -122,6 +122,9 @@ def build_prompt(batch, cand_by_url, theses_by_id, rubric):
         str_txt,
         "",
         *SCALE,
+        # Judgements the written scale would otherwise get wrong, kept in
+        # rubric.json beside the other tunables (Thomas's corrections drive them).
+        *["  note: " + n for n in rubric.get("scale_notes", [])],
         "",
         "The first two articles are fixed calibration examples: score them too, on the same scale.",
         "",

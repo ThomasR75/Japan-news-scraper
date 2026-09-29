@@ -161,6 +161,18 @@ def t_candidate_thesis_is_a_required_judgement():
     print("  ✓ with a candidate listed, the prompt demands a strength; without one, null is fine")
 
 
+def t_rubric_scale_notes_reach_the_prompt():
+    """Thomas rates the PM's daily diary at 5.0; the model scored it 1.0,
+    stably, because the written scale reads it as a listing. The rubric now
+    carries the view — official diaries are a primary source — as scale_notes,
+    and those lines must reach the model."""
+    assert R.get("scale_notes"), "rubric.json needs scale_notes"
+    p = sa.build_prompt([art(1)], {}, TH_BY_ID, R)
+    for line in R["scale_notes"]:
+        assert line in p, line
+    print("  ✓ rubric.json scale_notes are part of the prompt")
+
+
 def t_strength_zero_means_no_link():
     a = art(1)
     row = sa.make_row(a, item(a["url"], thesis={"id": "jgb", "strength": 0}, axes={**{x: 0 for x in AXES}, "macro": 6}),
@@ -310,6 +322,7 @@ if __name__ == "__main__":
                t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
                t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
                t_candidate_thesis_is_a_required_judgement, t_strength_zero_means_no_link,
+               t_rubric_scale_notes_reach_the_prompt,
                t_scoring_model_comes_from_the_rubric_not_the_translator,
                t_store_is_idempotent_per_rubric_version,
                t_rescoring_keeps_the_original_run_date, t_zero_scored_with_work_to_do_exits_one,

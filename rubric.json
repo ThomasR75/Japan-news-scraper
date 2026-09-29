@@ -1,6 +1,9 @@
 {
-  "version": "2026-09-29.3",
+  "version": "2026-09-29.4",
   "model": "MiniMax-M3",
+  "scale_notes": [
+    "Official diaries and daily schedules of the Prime Minister, the BoJ Governor and the Finance Minister are a PRIMARY SOURCE for who is meeting whom and in what order: score them 4-6 on politics or macro, never as human interest."
+  ],
   "axes": ["rates", "macro", "commodities", "credit", "politics", "corporate"],
   "axis_guidance": {
     "rates": "central bank policy, STIR, sovereign yields, JGBs",
