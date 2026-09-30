@@ -240,7 +240,7 @@ def score_batch(batch, cand_by_url, theses_by_id, rubric, call=None):
             got = parse_scores(call(prompt), urls)
             return [it for u, it in got.items() if u not in CALIBRATION_URLS]
         except Exception as e:
-            log("  batch of %d failed (attempt %d): %s" % (len(batch), attempt, type(e).__name__))
+            log("  batch of %d failed (attempt %d): %s: %s" % (len(batch), attempt, type(e).__name__, str(e)[:200]))
             if attempt == 1:
                 time.sleep(RETRY_WAIT)
     if len(batch) == 1:

@@ -120,6 +120,26 @@ def t_batch_retries_then_splits_into_singles():
     print("  ✓ a malformed batch is retried once, then split into singles (2 + 3 calls)")
 
 
+def t_failure_log_carries_the_message_not_just_the_class():
+    # 2026-09-30: 512 articles, every batch "failed (attempt n): RuntimeError",
+    # zero scored, top-50 not published — and nothing to say which of the two
+    # RuntimeErrors on that path it was, because the class name is all that
+    # was logged. A log line that cannot be acted on is not a log line.
+    batch = [art(1)]
+    lines = []
+    orig = sa.log
+    sa.log = lambda m: lines.append(m)
+    try:
+        def boom(prompt):
+            raise RuntimeError("No MINIMAX_API_KEY env var and no key in config")
+        sa.score_batch(batch, {}, TH_BY_ID, R, call=boom)
+    finally:
+        sa.log = orig
+    fails = [l for l in lines if "failed (attempt" in l]
+    assert fails and all("RuntimeError: No MINIMAX_API_KEY" in l for l in fails), fails
+    print("  ✓ a failed batch logs the exception class AND its message")
+
+
 def t_one_bad_single_costs_one_article():
     batch = [art(1), art(2)]
     items = {a["url"]: item(a["url"]) for a in batch}
@@ -319,7 +339,8 @@ if __name__ == "__main__":
     for fn in (t_run_date_is_jst_run_day_not_published_at, t_title_only_article_is_scored,
                t_parse_rejects_missing_url_and_ignores_extras, t_axis_values_are_clamped_or_rejected,
                t_missing_event_falls_back_to_title, t_unmatched_thesis_is_clamped_and_flagged,
-               t_batch_retries_then_splits_into_singles, t_one_bad_single_costs_one_article,
+               t_batch_retries_then_splits_into_singles, t_failure_log_carries_the_message_not_just_the_class,
+               t_one_bad_single_costs_one_article,
                t_prompt_carries_absolute_anchors, t_calibration_anchors_are_stripped_from_results,
                t_candidate_thesis_is_a_required_judgement, t_strength_zero_means_no_link,
                t_rubric_scale_notes_reach_the_prompt,
