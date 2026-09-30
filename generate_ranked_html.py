@@ -9,8 +9,15 @@ reason: a document of constant length is one a person keeps reading. Every
 row carries its source. Articles sharing an event sit adjacent, the second
 and later ones marked "same story". Zero rows raises — an empty ranked
 digest is exactly the failure this whole project exists to stop.
+
+Since 2026-09-30 each article's full English translation is embedded,
+collapsed under its title (a <details> block, no JavaScript): tap the title
+and the text unfolds in place instead of jumping to the website. The
+translations come from the raw article archive (data/news_archive/raw,
+kept three days) keyed by URL; an article whose file is gone renders the
+old way, title linking out, and says so.
 """
-import argparse, html as H, os, sys
+import argparse, glob, html as H, json, os, sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -19,7 +26,29 @@ from score_articles import connect, DB_PATH, COLS, run_date_jst
 
 HERE = Path(__file__).resolve().parent
 OUT_DIR = HERE / "data" / "reports"
+RAW_DIR = HERE / "data" / "news_archive" / "raw"
 JST = timezone(timedelta(hours=9))
+
+def translated_bodies(urls, root=RAW_DIR):
+    """{url: translated_text} for the wanted urls, from the raw archive.
+    Unreadable files and untranslated articles are simply absent."""
+    wanted = set(urls)
+    out = {}
+    for f in glob.glob(str(Path(root) / "*" / "*.json")):
+        try:
+            with open(f, encoding="utf-8") as fh:
+                a = json.load(fh)
+        except Exception:
+            continue
+        u = a.get("url")
+        if u in wanted and a.get("translated_text"):
+            out[u] = a["translated_text"]
+    return out
+
+def _paragraphs(text):
+    """Blank line = paragraph, single newline = line break; everything escaped."""
+    paras = [p.strip() for p in text.replace("\r\n", "\n").split("\n\n") if p.strip()]
+    return "".join("<p>%s</p>" % "<br>".join(H.escape(line) for line in p.split("\n")) for p in paras)
 
 def out_path(run_date):
     return OUT_DIR / ("daily_ranked_%s.html" % run_date)
@@ -46,7 +75,8 @@ def _thesis(r):
     mark = "" if r.get("thesis_matched") else ' <span class="unmatched" title="model-proposed, no ledger keyword">?</span>'
     return '<span class="thesis">→ %s · %d%s</span>' % (H.escape(r["thesis_id"]), int(r.get("thesis_strength") or 0), mark)
 
-def render(rows, run_date, rubric):
+def render(rows, run_date, rubric, bodies=None):
+    bodies = bodies or {}
     if not rows:
         raise ValueError("no scored articles for %s — refusing to render an empty ranked digest" % run_date)
     rows = sorted(rows, key=sort_key)
@@ -73,9 +103,16 @@ def render(rows, run_date, rubric):
                ".unmatched{color:#b45309;font-weight:700}"
                ".same-story{font-size:11px;color:#7a8794;font-style:italic}"
                ".reason{font-size:12px;color:#3d4852;margin-top:4px}"
+               "details.article>summary{cursor:pointer;list-style:none}"
+               "details.article>summary::-webkit-details-marker{display:none}"
+               "details.article>summary .title::after{content:' ▸';color:#9aa5b1;font-weight:400}"
+               "details.article[open]>summary .title::after{content:' ▾'}"
+               ".body{margin-top:10px;padding-top:10px;border-top:1px solid #e4e8ec;font-size:14px;color:#1a1f24}"
+               ".body p{margin-bottom:10px}"
+               ".source{display:inline-block;margin-top:4px;font-size:12px;color:#0b5cad}"
                "</style></head><body>")
     out.append("<h1>📰 Ranked Japan News — %s JST</h1>" % run_date)
-    out.append("<div class='meta'>top %d of %d scored · %d above %.1f · rubric %s · sources shown per article</div>"
+    out.append("<div class='meta'>top %d of %d scored · %d above %.1f · rubric %s · sources shown per article · tap a title to read the article</div>"
                % (len(top), len(rows), above, thr, H.escape(rubric["version"])))
     if above == 0:
         out.append("<div class='banner'>Quiet day: nothing scored above %.1f. Listed anyway, lowest bar first.</div>" % thr)
@@ -83,19 +120,33 @@ def render(rows, run_date, rubric):
     for r in top:
         same = prev_event is not None and same_event(prev_event, r.get("event") or "", rubric.get("event_jaccard", 0.6))
         cls = "article same" if same else "article"
-        out.append('<div class="%s">' % cls)
-        out.append("<div class='row'><div class='score'>%.1f</div><div class='title'><a href='%s'>%s</a></div></div>"
-                   % (float(r["score"]), H.escape(r["url"]), H.escape(r["title_en"])))
+        body = bodies.get(r["url"])
         pub = (r.get("published_at") or "")[:16].replace("T", " ")
-        out.append("<div class='src'>%s%s%s</div>"
-                   % (H.escape(r["source"]), " · " + H.escape(pub) if pub else "",
-                      " · <span class='same-story'>same story</span>" if same else ""))
+        src_line = "%s%s%s" % (H.escape(r["source"]), " · " + H.escape(pub) if pub else "",
+                               " · <span class='same-story'>same story</span>" if same else "")
         chips = _axes_chips(r); th = _thesis(r)
-        if chips or th:
-            out.append("<div style='margin-top:6px'>%s %s</div>" % (chips, th))
-        if r.get("reason"):
-            out.append("<div class='reason'>%s</div>" % H.escape(r["reason"]))
-        out.append("</div>")
+        if body:
+            # The title is the summary; the translation unfolds beneath it.
+            out.append('<details class="%s"><summary>' % cls)
+            out.append("<span class='row'><span class='score'>%.1f</span><span class='title'>%s</span></span>"
+                       % (float(r["score"]), H.escape(r["title_en"])))
+            out.append("<span class='src' style='display:block'>%s</span>" % src_line)
+            if chips or th:
+                out.append("<span style='display:block;margin-top:6px'>%s %s</span>" % (chips, th))
+            if r.get("reason"):
+                out.append("<span class='reason' style='display:block'>%s</span>" % H.escape(r["reason"]))
+            out.append("</summary><div class='body'>%s<a class='source' href='%s'>source ↗</a></div></details>"
+                       % (_paragraphs(body), H.escape(r["url"])))
+        else:
+            out.append('<div class="%s">' % cls)
+            out.append("<div class='row'><div class='score'>%.1f</div><div class='title'><a href='%s'>%s</a></div></div>"
+                       % (float(r["score"]), H.escape(r["url"]), H.escape(r["title_en"])))
+            out.append("<div class='src'>%s · text not available</div>" % src_line)
+            if chips or th:
+                out.append("<div style='margin-top:6px'>%s %s</div>" % (chips, th))
+            if r.get("reason"):
+                out.append("<div class='reason'>%s</div>" % H.escape(r["reason"]))
+            out.append("</div>")
         if not same:
             prev_event = r.get("event") or ""
     out.append("<div class='meta' style='margin-top:20px'>Generated %s · not openclaw</div>"
@@ -111,8 +162,10 @@ def main(argv=None):
     rubric = load_rubric()
     conn = connect(Path(args.db))
     rows = fetch_rows(conn, args.date, rubric.get("max_age_days"))
+    top_n = int(rubric.get("top_n_html", 50))
+    bodies = translated_bodies(r["url"] for r in rows[:top_n])
     try:
-        html = render(rows, args.date, rubric)
+        html = render(rows, args.date, rubric, bodies=bodies)
     except ValueError as e:
         print(str(e), file=sys.stderr)
         return 1
@@ -121,7 +174,7 @@ def main(argv=None):
     with open(tmp, "w", encoding="utf-8") as fh:
         fh.write(html)
     os.replace(tmp, p)
-    print("wrote %s (%d rows, %d bytes)" % (p, min(len(rows), rubric.get("top_n_html", 50)), len(html)))
+    print("wrote %s (%d rows, %d with full text, %d bytes)" % (p, min(len(rows), top_n), sum(1 for r in rows[:top_n] if r["url"] in bodies), len(html)))
     return 0
 
 if __name__ == "__main__":

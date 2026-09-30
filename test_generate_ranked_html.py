@@ -84,6 +84,45 @@ def t_stale_rows_are_excluded_from_the_document_and_the_feed():
     print("  ✓ a stale row never reaches the document, however high it scored")
 
 
+def t_full_text_unfolds_under_the_title():
+    # Thomas, 2026-09-30: "instead of going to the website jump down the html
+    # for the translated article". The title is a <summary>; the translation
+    # sits collapsed under it, paragraphs kept, escaped, source link kept.
+    rows = [mkrow(1, 9.0), mkrow(2, 8.0)]
+    bodies = {"https://x/1": "First para with <b>angle</b> & ampersand.\n\nSecond para.\nStill second."}
+    html = g.render(rows, "2026-09-29", R, bodies=bodies)
+    assert "<details" in html and "<summary" in html, "article 1 must be a details/summary block"
+    assert "First para with &lt;b&gt;angle&lt;/b&gt; &amp; ampersand." in html, "body escaped"
+    assert html.count("<p>") == 2 and "Second para.<br>Still second." in html, "blank line = paragraph, newline = line break"
+    assert "class='source' href='https://x/1'" in html, "source link kept at the end of the text"
+    i1, i2 = html.index("Title 1"), html.index("Title 2")
+    assert i1 < html.index("First para") < i2, "the text sits under its own title"
+    print("  ✓ the translation unfolds under the title; escaped, paragraphs kept, source link kept")
+
+
+def t_missing_text_falls_back_to_the_link():
+    rows = [mkrow(1, 9.0)]
+    html = g.render(rows, "2026-09-29", R, bodies={})
+    assert "<details" not in html
+    assert "<a href='https://x/1'>Title 1</a>" in html, "title links to the site as before"
+    assert "text not available" in html
+    html2 = g.render(rows, "2026-09-29", R)                     # no bodies at all: today's behaviour
+    assert "<details" not in html2 and "<a href='https://x/1'>Title 1</a>" in html2
+    print("  ✓ no stored translation: the title links out, and says so")
+
+
+def t_translated_bodies_reads_the_raw_archive_by_url():
+    root = Path(tempfile.mkdtemp())
+    (root / "Nikkei_Economy").mkdir()
+    (root / "Nikkei_Economy" / "a.json").write_text(
+        '{"url": "https://x/1", "translated_text": "Hello.", "extracted_text": "\u3053\u3093"}', encoding="utf-8")
+    (root / "Nikkei_Economy" / "b.json").write_text('{"url": "https://x/2", "extracted_text": "untranslated"}', encoding="utf-8")
+    (root / "Nikkei_Economy" / "junk.json").write_text("{not json", encoding="utf-8")
+    got = g.translated_bodies({"https://x/1", "https://x/2", "https://x/3"}, root=root)
+    assert got == {"https://x/1": "Hello."}, got
+    print("  ✓ translated_bodies maps url → translated_text from the raw archive; untranslated and junk skipped")
+
+
 def t_main_writes_atomically():
     conn = db_with([mkrow(1, 9.0)])
     db = conn.execute("PRAGMA database_list").fetchone()[2]
@@ -99,6 +138,8 @@ if __name__ == "__main__":
     print("Running ranked-html tests...")
     failed = False
     for fn in (t_zero_rows_raises, t_renders_top_50_with_sources, t_same_story_marker_on_adjacent_rows,
+               t_full_text_unfolds_under_the_title, t_missing_text_falls_back_to_the_link,
+               t_translated_bodies_reads_the_raw_archive_by_url,
                t_quiet_day_banner_when_none_above_threshold, t_fetch_rows_spans_the_whole_run_date,
                t_stale_rows_are_excluded_from_the_document_and_the_feed, t_main_writes_atomically):
         try:

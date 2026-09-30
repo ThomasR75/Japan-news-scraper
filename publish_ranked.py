@@ -93,7 +93,7 @@ def main(argv=None):
         print(msg); print("(would send %s)" % html)
         return 0
     tok = token()
-    caption = "📰 Ranked Japan News — %s JST (top 50)%s" % (args.date, (" · " + args.note) if args.note else "")
+    caption = "📰 Ranked Japan News — %s JST (top 50, tap a title to read the article)%s" % (args.date, (" · " + args.note) if args.note else "")
     ok_doc = html.exists() and send_document(html, caption + NOT_OPENCLAW, tok, CHAT_ID)
     ok_msg = send_message(msg, tok, CHAT_ID)
     print("telegram: document %s · message %s" % ("OK" if ok_doc else "FAIL/missing", "OK" if ok_msg else "FAIL"))
