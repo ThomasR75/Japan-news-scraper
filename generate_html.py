@@ -14,6 +14,8 @@ import argparse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+from nas_archive import archive_to_nas
+
 JP = timezone(timedelta(hours=9))
 
 # ─── Japanese Shingle Deduplication ───────────────────────────────────────
@@ -407,9 +409,12 @@ if __name__ == '__main__':
     generate_html_report(articles_by_source, output_path, date_formatted)
     generate_html_report(articles_by_source, today_path, date_formatted)  # always overwrite today symlink
 
-    # Also save to /mnt/botsaves/ for long-term storage
+    # Also save to /mnt/botsaves/ for long-term storage. Through a child
+    # process with a deadline: the mount is hard NFS, and on 2026-09-30 a dead
+    # NAS held this step for 69 minutes and nothing was delivered.
     BOTSaves_DIR = Path("/mnt/botsaves/japan_news")
-    BOTSaves_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(output_path, BOTSaves_DIR / f"daily_digest{suffix}_{date_formatted}.html")
-    shutil.copy2(today_path, BOTSaves_DIR / f"daily_digest_today{suffix}.html")
-    print(f"Also saved to {BOTSaves_DIR}")
+    if archive_to_nas([(output_path, f"daily_digest{suffix}_{date_formatted}.html"),
+                       (today_path, f"daily_digest_today{suffix}.html")], BOTSaves_DIR):
+        print(f"Also saved to {BOTSaves_DIR}")
+    else:
+        print(f"NOT archived to {BOTSaves_DIR} (NAS unavailable) — digest is on local disk")

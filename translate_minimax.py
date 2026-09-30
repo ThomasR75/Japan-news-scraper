@@ -14,7 +14,9 @@ BACKOFF = 10
 # were dead and there was little to translate; the day they were fixed
 # (2026-09-28) the workload tripled and systemd killed the run at 60 min with
 # nothing delivered. Override with TRANSLATE_WORKERS=1 to get the old loop.
-WORKERS = int(os.environ.get('TRANSLATE_WORKERS', '4') or 4)
+# Default lowered 4 -> 2 on 2026-09-30 at Thomas's request (170 articles took
+# 14 min at 4, so ~28 at 2 — well inside the unit's 3 h ceiling).
+WORKERS = int(os.environ.get('TRANSLATE_WORKERS', '2') or 2)
 SECONDS_PER_ARTICLE = 20   # for the estimate line only
 
 def log(m):
