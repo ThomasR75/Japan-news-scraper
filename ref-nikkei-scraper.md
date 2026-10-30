@@ -42,8 +42,15 @@ Nikkei sessions last only a few weeks; expect to do this roughly monthly.
    ID account (`Thomasr75@gmail.com`). Confirm you can open a full article.
 2. With a cookie-export extension (Cookie-Editor → *Export* → *JSON*), export the
    cookies for the `nikkei.com` domain.
-3. Overwrite `~/.config/openclaw/nikkei_cookies.json` with that JSON (keep it a
-   plain list of cookie objects — don't wrap it).
+3. Commit that JSON as `Nikkei.md` in the private `ThomasR75/ClaudeCloud` repo
+   (a plain list of cookie objects; prose or a code fence around it is fine).
+   `nikkei-cookie-sync.timer` (every 6 h, :30 UTC) notices the later
+   `RNikkeiAuth` expiry, probes nikkei.com with the new cookies, backs up and
+   installs them, and Telegrams one line. To skip the wait:
+   `python3 ~/.openclaw/workspace/nikkei_scraper/sync_cookies_from_github.py`
+   (`--status` compares without changing anything).
+   Overwriting `~/.config/openclaw/nikkei_cookies.json` by hand still works —
+   the sync never downgrades, so a newer local file is left alone.
 
 ## Validate before re-running
 

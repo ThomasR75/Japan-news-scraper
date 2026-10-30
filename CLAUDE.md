@@ -101,7 +101,7 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 
 **Deduplication** in `generate_html.py` uses Japanese character 8-gram shingles (Hiragana U+3040–U+309F, Katakana U+30A0–U+30FF, Kanji U+4E00–U+9FAF), Jaccard ≥ 0.55. Typically reduces ~900–1000 raw articles to ~550–650.
 
-**Nikkei cookies**: stored at `~/.config/openclaw/nikkei_cookies.json` (JSON array in Cookie-Editor format with `name` and `value` keys). If Nikkei digest is empty, cookies have likely expired — refresh by exporting from a logged-in browser session.
+**Nikkei cookies**: stored at `~/.config/openclaw/nikkei_cookies.json` (JSON array in Cookie-Editor format with `name` and `value` keys). If Nikkei digest is empty, cookies have likely expired — refresh by exporting from a logged-in browser session. Since 2026-10-30 the refresh path is: commit the export to `ThomasR75/ClaudeCloud:Nikkei.md` and `nikkei-cookie-sync.timer` (`nikkei_scraper/sync_cookies_from_github.py`) validates and installs it; `nikkei-cookie-reminder.timer` nags the weekend before expiry, the sync nags daily once they are dead.
 
 ## Canonical docs
 
@@ -119,7 +119,7 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 | Nothing delivered, journal says `start operation timed out` | Translate workload exceeded the unit's `TimeoutStartSec` | Check `TRANSLATE_WORKERS` is not `1`; rerun with `systemctl --user start japan-news-pipeline.service` (translation is idempotent, already-done articles are skipped) |
 | Telegram send fails with `MISSING` | One digest file wasn't produced | Check `generate_html.py` step in log |
 | Run goes silent after `--- generate_html ... ---`, load average ~5 with idle CPU | NAS (`/mnt/botsaves`, hard NFS) unreachable. Fixed 2026-09-30: the archive copy goes through `nas_archive.archive_to_nas` (child process, 20 s deadline) and the digest is delivered regardless. If it recurs, something *else* is writing to the NAS in-process | `python3 test_nas_archive.py`; `journalctl -k \| grep 'nfs: server'` |
-| Nikkei digest empty | Cookies expired | Refresh `~/.config/openclaw/nikkei_cookies.json` |
+| Nikkei digest empty | Cookies expired (journal shows `AUTH CHALLENGE PAGE` per section; the unit still exits 0) | Export from a logged-in browser → commit to `ThomasR75/ClaudeCloud:Nikkei.md`; `nikkei-cookie-sync.timer` installs it within 6 h, or run `nikkei_scraper/sync_cookies_from_github.py` now. Procedure: `ref-nikkei-scraper.md` |
 
 ## Paths cheatsheet
 
