@@ -34,6 +34,13 @@ BASE = '/home/blablom/.openclaw/workspace/japan_news_scraper/data/news_archive/r
 LIGHTPANDA_BIN = '/home/blablom/.local/bin/lightpanda'
 
 # ── Sources: requests path (static HTML, fast) ────────────────────────────────
+# A real browser UA string. The bare 'Mozilla/5.0' this used to send was
+# rejected by Mainichi's CloudFront front door (403 "Request blocked") from
+# 2026-08-22, which zeroed all three Mainichi sections for ten weeks. The
+# other outlets answer identically to either string (checked 2026-10-30).
+HEADERS = {'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                          '(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36')}
+
 REQUESTS_SOURCES = [
     # Asahi (3) — uses obfuscated CSS-in-JS classes; main p is the stable selector
     ("Asahi Politics",       "https://www.asahi.com/politics/",       "a[href*='/articles/']", "h1, h1[class*='title']", "time", "main p"),
@@ -122,7 +129,7 @@ def _fetch_requests_listing(name, url, link_sel, title_sel, date_sel, text_sel, 
     page_url = url
     for page in range(max_pages):
         try:
-            resp = requests.get(page_url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            resp = requests.get(page_url, timeout=10, headers=HEADERS)
             if resp.status_code != 200:
                 break
             soup = BeautifulSoup(resp.text, 'html.parser')
@@ -150,7 +157,7 @@ def _scrape_requests_source(name, url, link_sel, title_sel, date_sel, text_sel, 
     links = _fetch_requests_listing(name, url, link_sel, title_sel, date_sel, text_sel)
     if not links:
         try:
-            resp = requests.get(url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            resp = requests.get(url, timeout=10, headers=HEADERS)
             for m in re.findall(r'href="([^"]+/articles?/[^"]+)"', resp.text):
                 links.append(m if m.startswith('http') else urljoin(resp.url, m))
             links = list(dict.fromkeys(links))[:15]
@@ -163,7 +170,7 @@ def _scrape_requests_source(name, url, link_sel, title_sel, date_sel, text_sel, 
         if article_url in SESSION_URLS_SET:
             continue
         try:
-            resp = requests.get(article_url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            resp = requests.get(article_url, timeout=10, headers=HEADERS)
             if resp.status_code != 200:
                 continue
             soup = BeautifulSoup(resp.text, 'html.parser')
@@ -190,7 +197,7 @@ def _scrape_requests_source(name, url, link_sel, title_sel, date_sel, text_sel, 
 def _scrape_rss_source(name, rss_url, max_articles=10):
     """Fetch RSS feed, then fetch each article URL via requests."""
     try:
-        resp = requests.get(rss_url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+        resp = requests.get(rss_url, timeout=10, headers=HEADERS)
         if resp.status_code != 200:
             print(f"    RSS returned {resp.status_code}")
             return 0
@@ -222,7 +229,7 @@ def _scrape_rss_source(name, rss_url, max_articles=10):
 
         # Fetch article body via requests
         try:
-            article_resp = requests.get(link, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            article_resp = requests.get(link, timeout=10, headers=HEADERS)
             if article_resp.status_code != 200:
                 continue
             soup = BeautifulSoup(article_resp.text, 'html.parser')
@@ -371,9 +378,7 @@ def main():
         total_saved += saved
 
     print("\n### YOMIURI PATH (requests + BeautifulSoup) ###")
-    import sys
-    sys.path.insert(0, '/home/blablom/bin')
-    from yomiuri_scraper import scrape_yomiuri_section
+    from yomiuri_scraper import scrape_yomiuri_section  # beside this file since 2026-10-30; was ~/bin
     for name, url in YOMIURI_SOURCES:
         print(f"\n--- {name} ---")
         saved, skipped = scrape_yomiuri_section(name, url, ARCHIVE_DIR, SESSION_URLS_SET)

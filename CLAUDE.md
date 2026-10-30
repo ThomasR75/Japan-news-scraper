@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `run.sh` (in this directory) — orchestrates the full pipeline.
 
-> Scripts moved out of `~/bin/` into the workspace when the pipeline was rebuilt **2026-06-22** after the workspace deletion (see `run.sh:8-9`). `~/bin/run_japan_news_pipeline.sh` and `~/bin/nikkei_scraper.py` **no longer exist**; only `~/bin/send_digests.sh` survived. Docs corrected 2026-07-28.
+> Scripts moved out of `~/bin/` into the workspace when the pipeline was rebuilt **2026-06-22** after the workspace deletion (see `run.sh:8-9`). `~/bin/run_japan_news_pipeline.sh` and `~/bin/nikkei_scraper.py` **no longer exist**; only `~/bin/send_digests.sh` survived. Docs corrected 2026-07-28. `~/bin/yomiuri_scraper.py` also survived there, unversioned and undocumented, until 2026-10-30 when it moved into this directory as `yomiuri_scraper.py` (the old file is kept as `.moved-to-japan_news_scraper-20261030`).
 
 `run.sh` has two failure modes, deliberately: **scraper** steps log and continue (a partial digest still goes out), while **translate** and **generate_html** steps abort the pipeline (`run_scraper` vs `run_strict`). So a missing source is survivable; a broken translator is not.
 
@@ -96,7 +96,8 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 **Non-Nikkei scraper** (`scraper_non_nikkei.py`) uses three modes internally:
 - `REQUESTS_SOURCES` — tuples of `(name, url, link_selector, title_selector, time_selector, body_selector)` for static HTML
 - `RSS_SOURCES` — tuples of `(name, feed_url)` for NHK
-- `YOMIURI_SOURCES` — tuples of `(name, url)` for Yomiuri (its own logic)
+- `YOMIURI_SOURCES` — tuples of `(name, url)` for Yomiuri, handled by `yomiuri_scraper.py` (this dir): regex on `/<section>/<id>/` links, optionally `/<section>/<region>/news/<id>/` for `/local/` (fixed 2026-10-30 — Local had returned 0 links since at least June), body from `.article-content`, 500-char minimum
+- All `requests` calls send `HEADERS` (a real Chrome UA). Mainichi's CloudFront 403s the bare `Mozilla/5.0` string; that zeroed the three Mainichi sections from 2026-08-22 to 2026-10-30 without any alert
 - `LIGHTPANDA_SOURCES` — currently empty (disabled 2026-04-28); was for JS-heavy SPAs; do not escalate back to Lightpanda unless requests fails
 
 **Deduplication** in `generate_html.py` uses Japanese character 8-gram shingles (Hiragana U+3040–U+309F, Katakana U+30A0–U+30FF, Kanji U+4E00–U+9FAF), Jaccard ≥ 0.55. Typically reduces ~900–1000 raw articles to ~550–650.
@@ -119,6 +120,7 @@ Nikkei and non-Nikkei share the same field schema (this is an important invarian
 | Nothing delivered, journal says `start operation timed out` | Translate workload exceeded the unit's `TimeoutStartSec` | Check `TRANSLATE_WORKERS` is not `1`; rerun with `systemctl --user start japan-news-pipeline.service` (translation is idempotent, already-done articles are skipped) |
 | Telegram send fails with `MISSING` | One digest file wasn't produced | Check `generate_html.py` step in log |
 | Run goes silent after `--- generate_html ... ---`, load average ~5 with idle CPU | NAS (`/mnt/botsaves`, hard NFS) unreachable. Fixed 2026-09-30: the archive copy goes through `nas_archive.archive_to_nas` (child process, 20 s deadline) and the digest is delivered regardless. If it recurs, something *else* is writing to the NAS in-process | `python3 test_nas_archive.py`; `journalctl -k \| grep 'nfs: server'` |
+| A source logs `Found 0 article links` every night | Site changed its front door or URL layout — Mainichi 403 (UA block) and Yomiuri Local (regional URL shape) ran for weeks unnoticed because the step exits 0 | `grep -B2 'Found 0' logs/pipeline_*.log` shows since when; fetch the listing with `HEADERS` and compare the link shapes |
 | Nikkei digest empty | Cookies expired (journal shows `AUTH CHALLENGE PAGE` per section; the unit still exits 0) | Export from a logged-in browser → commit to `ThomasR75/ClaudeCloud:Nikkei.md`; `nikkei-cookie-sync.timer` installs it within 6 h, or run `nikkei_scraper/sync_cookies_from_github.py` now. Procedure: `ref-nikkei-scraper.md` |
 
 ## Paths cheatsheet
