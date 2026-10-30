@@ -49,6 +49,13 @@ run_scraper "scraper_non_nikkei.py"  python3 scraper_non_nikkei.py
 # 2. Nikkei sections (6, via the standalone scraper subproject).
 run_scraper "nikkei_scraper.py"       python3 "$NIKKEI_DIR/nikkei_scraper.py"
 
+# 2b. Per-source dark-streak check on this run's log: Telegram once when a
+#     source has yielded 0 candidate articles for 3 runs, weekly while it
+#     stays that way, once when it is back. Non-fatal. Added 2026-10-30 after
+#     Mainichi (70 nights), Yomiuri Local (months) and Nikkei (4 mornings)
+#     were all found dark by hand — every one of those runs had exited 0.
+run_scraper "source_health.py"        python3 source_health.py --log "$LOG"
+
 # 3. MiniMax translates any article that's still JP-only.
 run_strict  "translate_minimax.py"    python3 translate_minimax.py
 

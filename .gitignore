@@ -9,5 +9,6 @@ data/news_archive/raw/
 data/news_archive/backup/
 data/news_archive/*.db
 data/news_archive/*.json
+data/source_health_state.json
 digests/
 logs/
