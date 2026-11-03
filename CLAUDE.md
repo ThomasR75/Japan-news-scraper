@@ -38,7 +38,7 @@ Run the whole thing (what the timer does):
 Or individual pipeline steps:
 
 ```bash
-python3 scraper_non_nikkei.py                    # step 1: 18+ non-Nikkei sources
+python3 scraper_non_nikkei.py                    # step 1: 23 non-Nikkei sources
 python3 ../nikkei_scraper/nikkei_scraper.py      # step 2: 6 Nikkei sections
 python3 translate_minimax.py                     # step 3: translate all untranslated articles
 python3 generate_html.py --exclude-nikkei        # step 4: non-Nikkei digest
@@ -70,7 +70,7 @@ grep -c 'class="article"' digests/nikkei_daily_$(TZ=Asia/Tokyo date +%Y-%m-%d).h
 
 ## Pipeline steps
 
-1. `scraper_non_nikkei.py` — 18+ non-Nikkei sources (requests / RSS). Sources: 3 Asahi, 3 Mainichi, 3 Sankei, 3 FNN, 3 NHK (all via requests/RSS), plus 5 Yomiuri. Retries once on failure, then continues.
+1. `scraper_non_nikkei.py` — 23 non-Nikkei sources (requests / RSS). Sources: 3 Asahi, 3 Mainichi, 3 Sankei, 3 FNN, 2 Jiji, Reuters Japan (republished in full by Yahoo! Finance — `jp.reuters.com` and `bloomberg.co.jp` answer 401/403 to requests), 3 NHK (RSS cat4 政治 / cat5 経済 / cat6 国際 — until 2026-11-03 the table read cat1 社会 / cat3 科学 / cat4 政治 under the wrong labels), plus 5 Yomiuri. Jiji and Reuters Japan added 2026-11-03; selectors are checked against saved pages in `golden/sources/` by `test_scraper_sources.py`. Retries once on failure, then continues.
 2. `../nikkei_scraper/nikkei_scraper.py` — 6 Nikkei sections (requests + paid-subscription cookies). Retries once, then continues.
 2b. `source_health.py --log $LOG` — parses the last run block of this log for every `--- Source ---` / `[Nikkei X]` section and keeps a dark-streak per source in `data/source_health_state.json`. Telegram once at 3 consecutive runs with 0 candidate articles (links found / RSS items / Nikkei saved+skipped — not "saved", which is legitimately 0 some nights), a reminder every 7 runs after, once on recovery. Non-fatal. Tests: `test_source_health.py`. Added 2026-10-30.
 3. `translate_minimax.py` — MiniMax translates anything with `extracted_text` missing `translated_text`, or `title` missing `title_en`. Imports `minimax_translate.py`. Failure aborts the pipeline. **Parallel since 2026-09-29:** a `ThreadPoolExecutor` with `WORKERS=2` (was 4 until 2026-09-30; override `TRANSLATE_WORKERS=N`; `1` restores the old sequential loop). Each article is ~20 s of waiting on the API, so 292 articles went from ~97 min to ~25. Why: the day the Nikkei cookies were fixed (2026-09-28) the workload tripled and systemd killed the run at its 60-min `TimeoutStartSec` with nothing delivered — the loop had only ever been fast because Nikkei was empty. `TimeoutStartSec` on the unit is now `10800` (3 h) as a ceiling, not a target. The script has a `main()` guard; `test_translate_parallel.py` asserts the pool is actually parallel (timing), that per-file atomic writes survive concurrency, and that one give-up costs one article.

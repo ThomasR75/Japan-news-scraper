@@ -58,14 +58,24 @@ REQUESTS_SOURCES = [
     ("FNN Politics",         "https://www.fnn.jp/subcategory/politics", "a[href*='/articles/']",  "h1", "time", "article p"),
     ("FNN Economy",          "https://www.fnn.jp/subcategory/economy",  "a[href*='/articles/']",  "h1", "time", "article p"),
     ("FNN International",    "https://www.fnn.jp/subcategory/world",    "a[href*='/articles/']",  "h1", "time", "article p"),
+    # Jiji (2) — the wire for BoJ/MoF/Kantei lines and the official diaries; body is the
+    # <p>s of .ArticleText only (the page also carries listings and recruiting blurbs in <p>).
+    ("Jiji Politics",        "https://www.jiji.com/jc/list?g=pol",      "a[href*='/jc/article?k=']", "h1", "time", ".ArticleText p"),
+    ("Jiji Economy",         "https://www.jiji.com/jc/list?g=eco",      "a[href*='/jc/article?k=']", "h1", "time", ".ArticleText p"),
+    # Reuters Japan (1) — jp.reuters.com answers 401 to requests; Yahoo! Finance republishes
+    # the Reuters Japan wire in full. Hashed class names, so match on the stable suffix.
+    ("Reuters Japan",        "https://finance.yahoo.co.jp/news/media/reut", "a[href*='/news/detail/']", "h1", "time", "[class*='ArticleDetail__body'] p"),
 ]
 
 # ── Sources: RSS path (NHK) ────────────────────────────────────────────────────
 RSS_SOURCES = [
-    # NHK (3) — all via RSS feeds; cat1=politics, cat3=international, cat4=economy
-    ("NHK Politics",       "https://www.nhk.or.jp/rss/news/cat1.xml"),
-    ("NHK International", "https://www.nhk.or.jp/rss/news/cat3.xml"),
-    ("NHK Economy",       "https://www.nhk.or.jp/rss/news/cat4.xml"),
+    # NHK (3) — all via RSS feeds. NHK's categories: cat1 社会, cat3 科学・文化, cat4 政治,
+    # cat5 経済, cat6 国際. Until 2026-11-03 this table read cat1/cat3/cat4 as
+    # politics/international/economy, i.e. society and science items under the wrong
+    # labels and no NHK economy or international at all.
+    ("NHK Politics",       "https://www.nhk.or.jp/rss/news/cat4.xml"),
+    ("NHK International", "https://www.nhk.or.jp/rss/news/cat6.xml"),
+    ("NHK Economy",       "https://www.nhk.or.jp/rss/news/cat5.xml"),
 ]
 
 # ── Sources: Lightpanda path (JS-heavy SPA) ─────────────────────────────────
@@ -123,6 +133,34 @@ def _save_article(name, url, title, body_text, date_str=''):
 
 # ── REQUESTS path ────────────────────────────────────────────────────────────────
 
+def _links_from_listing(html, base_url, link_sel):
+    """Absolute article URLs matched by `link_sel` on a listing page, in page order."""
+    links = []
+    soup = BeautifulSoup(html, 'html.parser')
+    for a in soup.select(link_sel):
+        href = a.get('href', '')
+        if href.startswith('http'):
+            links.append(href)
+        elif href.startswith('/'):
+            links.append(urljoin(base_url, href))
+    return links
+
+
+def _extract_article(html, title_sel, date_sel, text_sel):
+    """(title, date_str, body) from an article page with the source's selectors."""
+    soup = BeautifulSoup(html, 'html.parser')
+    title = ' '.join(s.get_text(strip=True) for s in soup.select(title_sel))
+    date_str = ''
+    for t in soup.select(date_sel):
+        dt = t.get('datetime') or t.get_text(strip=True)
+        if dt:
+            date_str = dt[:10] if len(dt) > 10 else dt
+            break
+    body = ' '.join(p.get_text(strip=True) for p in soup.select(text_sel)
+                    if len(p.get_text(strip=True)) > 50 and p.find_parent(['script', 'style']) is None)
+    return title, date_str, body
+
+
 def _fetch_requests_listing(name, url, link_sel, title_sel, date_sel, text_sel, max_pages=2):
     """Get article links from a listing page via requests + BeautifulSoup."""
     links = []
@@ -133,12 +171,7 @@ def _fetch_requests_listing(name, url, link_sel, title_sel, date_sel, text_sel, 
             if resp.status_code != 200:
                 break
             soup = BeautifulSoup(resp.text, 'html.parser')
-            for a in soup.select(link_sel):
-                href = a.get('href', '')
-                if href.startswith('http'):
-                    links.append(href)
-                elif href.startswith('/'):
-                    links.append(urljoin(resp.url, href))
+            links.extend(_links_from_listing(resp.text, resp.url, link_sel))
             next_btn = soup.select_one('a[rel="next"], .next, a:contains("次へ")')
             if not next_btn or page >= max_pages - 1:
                 break
@@ -173,16 +206,7 @@ def _scrape_requests_source(name, url, link_sel, title_sel, date_sel, text_sel, 
             resp = requests.get(article_url, timeout=10, headers=HEADERS)
             if resp.status_code != 200:
                 continue
-            soup = BeautifulSoup(resp.text, 'html.parser')
-            title = ' '.join(s.get_text(strip=True) for s in soup.select(title_sel))
-            date_str = ''
-            for t in soup.select(date_sel):
-                dt = t.get('datetime') or t.get_text(strip=True)
-                if dt:
-                    date_str = dt[:10] if len(dt) > 10 else dt
-                    break
-            body = ' '.join(p.get_text(strip=True) for p in soup.select(text_sel)
-                           if len(p.get_text(strip=True)) > 50 and p.find_parent(['script', 'style']) is None)
+            title, date_str, body = _extract_article(resp.text, title_sel, date_sel, text_sel)
             if _save_article(name, article_url, title, body, date_str):
                 SESSION_URLS_SET.add(article_url)
                 saved += 1
@@ -346,9 +370,9 @@ def _scrape_lightpanda_source(name, url, max_articles=10):
 def main():
     print("=" * 60)
     print("NON-NIKKEI SCRAPER — Lightpanda-only policy")
-    print("  requests path: Asahi, Mainichi, Sankei, FNN (12 sources)")
-    print("  RSS path:      NHK cat1/cat3/cat4 (3 sources)")
-    print("  Lightpanda:    Yomiuri (3 sources)")
+    print("  requests path: Asahi, Mainichi, Sankei, FNN, Jiji, Reuters Japan via Yahoo! Finance (15 sources)")
+    print("  RSS path:      NHK cat4/cat5/cat6 (3 sources)")
+    print("  Yomiuri:       requests (5 sources)")
     print("  NO Chrome. NO mcporter. NO Windows node.")
     print("=" * 60)
 

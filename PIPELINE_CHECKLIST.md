@@ -32,7 +32,7 @@ Two files delivered to Telegram every morning:
 **Scheduled by:** systemd user timer `japan-news-pipeline.timer`, `OnCalendar` 20:00 UTC = 05:00 JST daily.
 
 **Steps (in order):** — all driven by `run.sh`; the paths below are what it invokes
-1. `python3 scraper_non_nikkei.py` — 18 non-Nikkei sources (requests / RSS / Lightpanda)
+1. `python3 scraper_non_nikkei.py` — 23 non-Nikkei sources (requests / RSS)
 2. `python3 ../nikkei_scraper/nikkei_scraper.py` — 6 Nikkei sections (requests + cookies)
 3. `python3 translate_minimax.py` — MiniMax translates everything missing `translated_text` or `title_en`
 4. `python3 generate_html.py --exclude-nikkei` — non-Nikkei digest
@@ -87,7 +87,7 @@ journalctl --user -u japan-news-pipeline.service -n 100
 ## Source list (all currently in scope)
 
 **Non-Nikkei** (20 sources — see `ref-non-nikkei-scraper.md` for live status):
-Asahi (Politics, Business, International) · Mainichi (Politics, International, Economy) · Sankei (Politics, Economy, International) · FNN (Politics, Economy, International) · NHK (Politics, International, Economy) · Yomiuri (Politics, Economy, International, Society, Local — paywalled teasers, thin yield)
+Asahi (Politics, Business, International) · Mainichi (Politics, International, Economy) · Sankei (Politics, Economy, International) · FNN (Politics, Economy, International) · Jiji (Politics, Economy) · Reuters Japan (via Yahoo! Finance) · NHK (Politics, International, Economy) · Yomiuri (Politics, Economy, International, Society, Local — paywalled teasers, thin yield)
 
 **Nikkei** (6+ sections — see `ref-nikkei-scraper.md`):
 Nikkei_Business · Nikkei_Economy · Nikkei_Finance · Nikkei_International · Nikkei_Markets · Nikkei_Politics
